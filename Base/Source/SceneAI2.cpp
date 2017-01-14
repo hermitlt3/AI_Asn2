@@ -147,6 +147,7 @@ void SceneAI2::UpdatePhysics(double dt)
 
 void SceneAI2::Update(double dt)
 {
+	MessageBoard::GetInstance()->Update(dt);
 	fps = 1.f / (float)dt;
 	priest->Update(dt);
 
@@ -204,11 +205,14 @@ void SceneAI2::Render()
 			RenderGO(go);
 		}
 	}
-
+	float yCoordinates = 58.f;
 	std::ostringstream ss;
-	ss.precision(1);
-	ss << "HI";
-	RenderTextOnScreen(meshList[GEO_TEXT], ss.str(), Color(1, 1, 1), 3, 10, 3);
+	for (size_t i = 0; i < MessageBoard::GetInstance()->GetList().size(); ++i)
+	{
+		ss.str("");
+		ss << "Message Board receives \"" << MessageBoard::GetInstance()->GetList()[i] << "\"";
+		RenderTextOnScreen(meshList[GEO_TEXT], ss.str(), Color(1, 1, 1), 1, 1, yCoordinates - i * 1.5f);
+	}
 }
 
 void SceneAI2::Exit()
