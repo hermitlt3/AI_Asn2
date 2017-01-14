@@ -31,21 +31,27 @@ void Priest::OnNotification(const std::string& msg)
 
 void Priest::Update(double dt)
 {
-	if (currState == HEAL)
+	switch (currState) {
+	case HEAL:
 	{
-		vel = Vector3(-5, 0, 0);
+				 vel = Vector3(-5, 0, 0);
+				 break;
 	}
-	if (currState == IDLE)
+	case IDLE:
 	{
-		vel = Vector3(5, 0, 0);
+				 vel = Vector3(5, 0, 0);
+				 break;
 	}
-	if (currState == RUN)
+	case RUN:
 	{
-		vel = IsEnemiesInInnerP();
+				vel = IsEnemiesInInnerP();
+				break;
 	}
-	if (currState == DIE)
+	case DIE:
 	{
-		vel = Vector3(0, -5, 0);
+				vel = Vector3(0, -5, 0);
+				break;
+	}
 	}
 	// Check if the health in this frame is not the same as the one in the next frame
 	nextHealth = health;
@@ -62,12 +68,13 @@ void Priest::FSM()
 	{
 		if (health != nextHealth) {
 			currState = RUN;
-			SendMessage("ATTACKED");
+			SendMessage("UNDER ATTACK");
 		}
 		if (currState == RUN) {
 			if (!IsEnemiesInInnerP())
 			{
 				currState = IDLE;
+				SendMessage("UNHARMED");
 			}
 		}
 	}
