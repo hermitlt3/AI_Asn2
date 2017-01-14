@@ -44,7 +44,7 @@ public:
 	enum GEOMETRY_TYPE
 	{
 		GEO_AXES,
-		GRID,
+		PRIEST,
 
 		GEO_TEXT,
 		GEO_TEXT2,

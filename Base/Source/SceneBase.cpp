@@ -103,7 +103,7 @@ void SceneBase::Init()
 	}
 
 	meshList[GEO_AXES] = MeshBuilder::GenerateAxes("reference", 1000, 1000, 1000);
-	meshList[GRID] = MeshBuilder::GenerateLine("Gridline", Color(1, 1, 1), 100.f);
+	meshList[PRIEST] = MeshBuilder::GenerateSphere("priest", Color(0, 0, 1), 36.f, 36.f, 1.f);
 
 	meshList[PLAYER] = MeshBuilder::GenerateCube("player", Color(1, 1, 1), 5.f);
 

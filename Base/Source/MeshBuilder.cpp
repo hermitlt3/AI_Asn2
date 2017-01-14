@@ -528,7 +528,6 @@ Mesh* MeshBuilder::GenerateCircle(const std::string &meshName, Color color, int 
 	glBufferData(GL_ELEMENT_ARRAY_BUFFER, index_buffer_data.size() * sizeof(GLuint), &index_buffer_data[0], GL_STATIC_DRAW);
 
 	mesh->mode = Mesh::DRAW_LINES;
-
 	mesh->indexSize = index_buffer_data.size();
 
 	return mesh;

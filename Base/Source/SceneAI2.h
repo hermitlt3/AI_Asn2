@@ -6,7 +6,7 @@
 #include "SceneBase.h"
 #include <string>
 using std::string;
-
+class Priest;
 class SceneAI2 : public SceneBase
 {
 
@@ -38,6 +38,7 @@ protected:
 	float textureOffset[2];
 
 	int m_objectCount;
+	Priest* priest;
 };
 
 

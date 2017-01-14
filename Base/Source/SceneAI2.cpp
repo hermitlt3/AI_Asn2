@@ -4,7 +4,8 @@
 #include "Application.h"
 #include "MeshBuilder.h"
 #include "KeyboardController.h"
-#include "GO_List.h"
+#include "GameObjectManager.h"
+#include "MessageBoard.h"
 
 // Libs
 #include "GL\glew.h"
@@ -12,6 +13,8 @@
 #include <iostream>
 #include <math.h>
 #include <sstream>
+
+#include "Priest.h"
 
 using std::ifstream;
 
@@ -30,12 +33,21 @@ void SceneAI2::Init()
 	Math::InitRNG();
 	m_worldHeight = 100.f;
 	m_worldWidth = m_worldHeight * (float)Application::GetWindowWidth() / Application::GetWindowHeight();
+
+	m_objectCount = 0;
+
+	priest = new Priest();
+	priest->type = GameObject::GO_PRIEST;
+	priest->pos = Vector3(30, 10, 0);
+	priest->scale = Vector3(5, 5, 5);
+	priest->active = true;
+	GameObjectManager::GetInstance()->m_goList.push_back(priest);
 }
 
 
 GameObject* SceneAI2::FetchGO()
 {
-	for (std::vector<GameObject *>::iterator it = GameObjectList::GetInstance()->m_goList.begin(); it != GameObjectList::GetInstance()->m_goList.end(); ++it)
+	for (std::vector<GameObject *>::iterator it = GameObjectManager::GetInstance()->m_goList.begin(); it != GameObjectManager::GetInstance()->m_goList.end(); ++it)
 	{
 		GameObject *go = *it;
 		if (go->active == false)
@@ -47,10 +59,10 @@ GameObject* SceneAI2::FetchGO()
 	}
 	for (size_t count = 0; count < 10; ++count)
 	{
-		GameObjectList::GetInstance()->m_goList.push_back(new GameObject(GameObject::GO_NONE));
+		GameObjectManager::GetInstance()->m_goList.push_back(new GameObject(GameObject::GO_NONE));
 	}
 
-	GameObject *go = *(GameObjectList::GetInstance()->m_goList.end() - 1);
+	GameObject *go = *(GameObjectManager::GetInstance()->m_goList.end() - 1);
 	go->active = true;
 	++m_objectCount;
 	return go;
@@ -77,16 +89,16 @@ void SceneAI2::UpdateMouse(double dt)
 void SceneAI2::UpdateKeys(double dt)
 {
 	if (KeyboardController::GetInstance()->IsKeyDown('W')) {
-
+		priest->health -= 5;
 	}
 	if (KeyboardController::GetInstance()->IsKeyDown('S')) {
 
 	}
 	if (KeyboardController::GetInstance()->IsKeyDown('A')) {
-
+		MessageBoard::GetInstance()->BroadcastMessage("INJURED");
 	}
 	if (KeyboardController::GetInstance()->IsKeyDown('D')) {
-
+		MessageBoard::GetInstance()->BroadcastMessage("UNINJURED");
 	}
 
 	//
@@ -101,7 +113,7 @@ void SceneAI2::UpdateKeys(double dt)
 void SceneAI2::UpdatePhysics(double dt)
 {
 	//Physics Simulation Section
-	for (std::vector<GameObject *>::iterator it = GameObjectList::GetInstance()->m_goList.begin(); it != GameObjectList::GetInstance()->m_goList.end(); ++it)
+	for (std::vector<GameObject *>::iterator it = GameObjectManager::GetInstance()->m_goList.begin(); it != GameObjectManager::GetInstance()->m_goList.end(); ++it)
 	{
 		GameObject *go = (GameObject *)*it;
 		if (!go->active)
@@ -111,7 +123,7 @@ void SceneAI2::UpdatePhysics(double dt)
 		float radius = go->scale.x;
 
 		//Exercise 8a: handle collision between GO_BALL and GO_BALL using velocity swap
-		for (std::vector<GameObject *>::iterator ho = it + 1; ho != GameObjectList::GetInstance()->m_goList.end(); ++ho)
+		for (std::vector<GameObject *>::iterator ho = it + 1; ho != GameObjectManager::GetInstance()->m_goList.end(); ++ho)
 		{
 			GameObject* other = (GameObject*)*ho;
 			if (!other->active)
@@ -136,20 +148,29 @@ void SceneAI2::UpdatePhysics(double dt)
 void SceneAI2::Update(double dt)
 {
 	fps = 1.f / (float)dt;
+	priest->Update(dt);
 
 	UpdateKeys(dt);
 	UpdateMouse(dt);
 	UpdatePhysics(dt);
+
+	priest->FSM();
 }
 
 void SceneAI2::RenderGO(GameObject *go)
 {
-	modelStack.PushMatrix();
-	modelStack.Translate(go->pos.x, go->pos.y, go->pos.z);
-	float angle = -90.f + Math::RadianToDegree(atan2(go->normal.y, go->normal.x));
-	modelStack.Rotate(angle, 0, 0, 1);
-	modelStack.Scale(go->scale.x, go->scale.y, go->scale.z);
-	modelStack.PopMatrix();
+	switch (go->type)
+	{
+	case GameObject::GO_PRIEST:
+	{
+								  modelStack.PushMatrix();
+								  modelStack.Translate(go->pos.x, go->pos.y, go->pos.z);
+								  modelStack.Scale(go->scale.x, go->scale.y, go->scale.z);
+								  RenderMesh(meshList[PRIEST], false);
+								  modelStack.PopMatrix();
+								  break;
+	}
+	}
 }
 
 void SceneAI2::Render()
@@ -175,7 +196,7 @@ void SceneAI2::Render()
 	// Model matrix : an identity matrix (model will be at the origin)
 	modelStack.LoadIdentity();
 
-	for (std::vector<GameObject *>::iterator it = GameObjectList::GetInstance()->m_goList.begin(); it != GameObjectList::GetInstance()->m_goList.end(); ++it)
+	for (std::vector<GameObject *>::iterator it = GameObjectManager::GetInstance()->m_goList.begin(); it != GameObjectManager::GetInstance()->m_goList.end(); ++it)
 	{
 		GameObject *go = (GameObject *)*it;
 		if (go->active)
@@ -188,23 +209,16 @@ void SceneAI2::Render()
 	ss.precision(1);
 	ss << "HI";
 	RenderTextOnScreen(meshList[GEO_TEXT], ss.str(), Color(1, 1, 1), 3, 10, 3);
-
-	modelStack.PushMatrix();
-	modelStack.Translate(0, 0, 0);
-	RenderMesh(meshList[GRID], false);
-	modelStack.PopMatrix();
-
-	RenderMesh(meshList[GEO_AXES], false);
 }
 
 void SceneAI2::Exit()
 {
 	SceneBase::Exit();
 	//Cleanup GameObjects
-	while (GameObjectList::GetInstance()->m_goList.size() > 0)
+	while (GameObjectManager::GetInstance()->m_goList.size() > 0)
 	{
-		GameObject *go = GameObjectList::GetInstance()->m_goList.back();
+		GameObject *go = GameObjectManager::GetInstance()->m_goList.back();
 		delete go;
-		GameObjectList::GetInstance()->m_goList.pop_back();
+		GameObjectManager::GetInstance()->m_goList.pop_back();
 	}
 }

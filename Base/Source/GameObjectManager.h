@@ -1,14 +1,14 @@
 #pragma once
 #include "SingletonTemplate.h"
 #include "GameObject.h"
-#include <list>
+#include <vector>
 
-using std::list;
+using std::vector;
 class GameObjectManager : public Singleton<GameObjectManager> {
 	friend Singleton<GameObjectManager>;
 
 public:
-	list<GameObject*> m_goList;
+	vector<GameObject*> m_goList;
 };
 
 /*********** Physics *************/
