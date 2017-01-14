@@ -205,12 +205,13 @@ void SceneAI2::Render()
 			RenderGO(go);
 		}
 	}
+
 	float yCoordinates = 58.f;
 	std::ostringstream ss;
 	for (size_t i = 0; i < MessageBoard::GetInstance()->GetList().size(); ++i)
 	{
 		ss.str("");
-		ss << "Message Board receives \"" << MessageBoard::GetInstance()->GetList()[i] << "\"";
+		ss << i << ": Message Board receives \"" << MessageBoard::GetInstance()->GetList()[i] << "\"";
 		RenderTextOnScreen(meshList[GEO_TEXT], ss.str(), Color(1, 1, 1), 1, 1, yCoordinates - i * 1.5f);
 	}
 }
