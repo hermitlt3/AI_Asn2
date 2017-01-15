@@ -2,6 +2,7 @@
 
 #include "GameObject.h"
 #include "Messager.h"
+#include "Priest.h"
 
 class Priest;
 class Enemy;
@@ -25,7 +26,7 @@ public:
 	virtual void Update(double dt);
 	// Finite State Machine
 	void FSM();
-
+	inline void SetPriest(Priest* Priest){ _Priest = Priest; };
 	void SetOriginalPosition(Vector3 position);
 	Vector3 GetOriginalPosition();
 
@@ -40,16 +41,25 @@ private:
 	Vector3 OriginalPosition;
 
 	//This is to Check if the priest is being attacked
-	Priest* _Priest;
-	Enemy* _target;
+	Priest *_Priest;
+	GameObject *_target;
+	GameObject *nearestTarget;
 
 	//This is called when the Guardian is in Return State;
 	void Returnposition(double dt);
+	void GoToPriest(double dt);
 	void LocateTarget();
+	void ChaseTarget(GameObject *target);
 	void CheckHP();
 	bool InAggroRange();
 
 	float Speed;
 	Vector3 direction;
 	float Aggrorange;
+	float distancefromPriest;
 };
+
+static float DistBetween(const Vector3& posOne, const Vector3& posTwo)
+{
+	return (posOne - posTwo).Length();
+}
