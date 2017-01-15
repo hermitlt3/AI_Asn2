@@ -27,6 +27,7 @@ public:
 	// Finite State Machine
 	void FSM();
 	inline void SetPriest(Priest* Priest){ _Priest = Priest; };
+	inline void SetTarget(GameObject* thetarget){ _target = thetarget; };
 	void SetOriginalPosition(Vector3 position);
 	Vector3 GetOriginalPosition();
 

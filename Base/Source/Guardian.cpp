@@ -51,10 +51,7 @@ void Guardian::FSM()
 		case ATTACK:
 		{
 			//This is in OnNotification();
-			if (!InAggroRange())
-			{
-				currState = RETURN;
-			}
+			
 			break;
 		}
 		case RETURN:
@@ -103,10 +100,13 @@ void Guardian::Update(double dt)
 	case RETURN:
 	{
 		Returnposition(dt);
+		cout << "Returning" << endl;
 		break;
 	}
 	case ATTACK:
 	{
+		this->vel.SetZero();
+		this->normal = (_target->pos - pos).Normalized();
 		cout << "Attacking" << endl;
 		break;
 	}
@@ -188,6 +188,7 @@ void Guardian::LocateTarget()
 	{
 		_target = nearestTarget;
 		ChaseTarget(_target);
+		SetTarget(_target);
 	}
 
 	
