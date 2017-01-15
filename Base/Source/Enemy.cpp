@@ -37,7 +37,17 @@ void Enemy::Update(double dt)
 		}
 	}
 	if (health <= 0)
-		active = false;
+	{
+		for (vector<GameObject*>::iterator it = GameObjectManager::GetInstance()->m_goList.begin(); it != GameObjectManager::GetInstance()->m_goList.end();) {
+			if (*it == this) {
+				it = GameObjectManager::GetInstance()->m_goList.erase(it);
+				break;
+			}
+			else
+				it++;
+		}
+	}
+		
 }
 
 void Enemy::OnNotification(const std::string& str)

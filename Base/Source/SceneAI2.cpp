@@ -44,6 +44,7 @@ void SceneAI2::Init()
 
 	guardian = new Guardian();
 	guardian->SetGO(GameObject::GO_GUARDIAN, Vector3(1, 1, 1), Vector3(0, 0, 0), Vector3(25, 10, 0)); // TYPE, SCALE, ROTATION, POSITION
+	guardian->SetOriginalPosition(Vector3(25, 10, 0));
 	guardian->health = 100;
 	guardian->maxhealth = 100;
 	GameObjectManager::GetInstance()->m_goList.push_back(guardian);
@@ -112,15 +113,24 @@ void SceneAI2::UpdateKeys(double dt)
 		bossEnemy->health -= 1;
 	}
 	if (KeyboardController::GetInstance()->IsKeyDown('S')) {
-
+		guardian->pos += Vector3(10,0,0);
 	}
 	if (KeyboardController::GetInstance()->IsKeyDown('A')) {
-		MessageBoard::GetInstance()->BroadcastMessage("INJURED");
+		MessageBoard::GetInstance()->BroadcastMessage("UNHARMED");
 	}
 	if (KeyboardController::GetInstance()->IsKeyDown('D')) {
-		MessageBoard::GetInstance()->BroadcastMessage("UNINJURED");
+		MessageBoard::GetInstance()->BroadcastMessage("UNDER ATTACK");
 	}
-
+	if (KeyboardController::GetInstance()->IsKeyDown('P'))
+	{
+		std::cout << "Original Position: " << guardian->GetOriginalPosition().x << " " <<
+			guardian->GetOriginalPosition().y << " " << guardian->GetOriginalPosition().z << std::endl;
+		priest->health -= 1;
+	}
+	if (KeyboardController::GetInstance()->IsKeyDown('O'))
+	{
+		bossEnemy->health = 0;
+	}
 	//
 	double x, y;
 	Application::GetCursorPos(&x, &y);
@@ -180,6 +190,7 @@ void SceneAI2::Update(double dt)
 	fps = 1.f / (float)dt;
 	priest->Update(dt);
 	bossEnemy->Update(dt);
+	guardian->Update(dt);
 	for (int i = 0; i < 5; ++i)
 	{
 		hiddenEnemy[i]->Update(dt);
@@ -191,6 +202,7 @@ void SceneAI2::Update(double dt)
 	UpdatePhysics(dt);
 
 	priest->FSM();
+	guardian->FSM();
 }
 
 void SceneAI2::RenderGO(GameObject *go)
