@@ -15,6 +15,7 @@
 #include <sstream>
 
 #include "Priest.h"
+#include "Guardian.h"
 
 using std::ifstream;
 
@@ -38,10 +39,18 @@ void SceneAI2::Init()
 
 	priest = new Priest();
 	priest->type = GameObject::GO_PRIEST;
-	priest->pos = Vector3(30, 10, 0);
-	priest->scale = Vector3(5, 5, 5);
+	priest->pos = Vector3(30, 15, 0);
+	priest->scale = Vector3(1, 1, 1);
 	priest->active = true;
 	GameObjectManager::GetInstance()->m_goList.push_back(priest);
+
+	guardian = new Guardian();
+	guardian->type = GameObject::GO_GUARDIAN;
+	guardian->pos = Vector3(25, 10, 0);
+	guardian->scale = Vector3(1, 1, 1);
+	guardian->active = true;
+	GameObjectManager::GetInstance()->m_goList.push_back(guardian);
+
 }
 
 
@@ -163,6 +172,7 @@ void SceneAI2::RenderGO(GameObject *go)
 	switch (go->type)
 	{
 	case GameObject::GO_PRIEST:
+	case GameObject::GO_GUARDIAN:
 	{
 								  modelStack.PushMatrix();
 								  modelStack.Translate(go->pos.x, go->pos.y, go->pos.z);

@@ -11,6 +11,7 @@ struct GameObject
 		GO_NONE = 0,
 		GO_PLAYER,
 		GO_PRIEST,
+		GO_GUARDIAN,
 
 		GO_TOTAL, //must be last
 	};

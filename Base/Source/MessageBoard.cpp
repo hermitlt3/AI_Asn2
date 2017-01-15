@@ -37,10 +37,10 @@ void MessageBoard::BroadcastMessage(const std::string& msg)
 void MessageBoard::Update(double dt)
 {
 
-	// If there is still a message
+	// If there is still a message being sent
 	if (!latestMessage.empty())
 	{
-		// Timer counts
+		// Timer start counting
 		timer += dt;
 		// If timer exceeds a certain limit
 		if (timer > 3.0)

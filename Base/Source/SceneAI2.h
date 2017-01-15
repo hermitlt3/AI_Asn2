@@ -7,6 +7,7 @@
 #include <string>
 using std::string;
 class Priest;
+class Guardian;
 class SceneAI2 : public SceneBase
 {
 
@@ -39,6 +40,7 @@ protected:
 
 	int m_objectCount;
 	Priest* priest;
+	Guardian* guardian;
 };
 
 

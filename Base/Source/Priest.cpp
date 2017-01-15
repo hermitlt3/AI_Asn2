@@ -4,10 +4,11 @@
 
 Priest::Priest() :
 currState(IDLE),
-innerProximity(5.f),
-outerProximity(10.f),
+innerProximity(15.f),
+outerProximity(30.f),
 nextHealth(health),
-timer(0.0)
+timer(0.0),
+speed(5.f)
 {
 	health = 100;
 }
@@ -34,23 +35,25 @@ void Priest::Update(double dt)
 	switch (currState) {
 	case HEAL:
 	{
-				 vel = Vector3(-5, 0, 0);
+				 vel = Vector3(-speed, 0, 0);
 				 break;
 	}
 	case IDLE:
 	{
-				 vel = Vector3(5, 0, 0);
+				 vel = Vector3(speed, 0, 0);
 				 break;
 	}
 	case RUN:
 	{
-				vel = IsEnemiesInInnerP();
+				vel = IsEnemiesInOuterP() * speed;
 				break;
 	}
 	case DIE:
 	{
-				vel = Vector3(0, -5, 0);
-				break;
+				scale.x -= dt; scale.y -= dt; scale.z -= dt;
+				if (scale.x <= Math::EPSILON) {
+					active = false;
+				}
 	}
 	}
 	// Check if the health in this frame is not the same as the one in the next frame
@@ -70,12 +73,22 @@ void Priest::FSM()
 			currState = RUN;
 			SendMessage("UNDER ATTACK");
 		}
-		if (currState == RUN) {
-			if (!IsEnemiesInInnerP())
-			{
-				currState = IDLE;
-				SendMessage("UNHARMED");
-			}
+		switch (currState){
+		case RUN:
+		{
+				  if (!IsEnemiesInInnerP())
+				  {
+					  currState = IDLE;
+					  SendMessage("UNHARMED");
+				  }
+				  break;
+		}
+		case HEAL:
+		case IDLE:
+		{
+					 // In OnNotification();
+					 break;
+		}
 		}
 	}
 }
@@ -88,12 +101,12 @@ Vector3 Priest::IsEnemiesInOuterP()
 		GameObject *go = (GameObject *)*it;
 		if (go->type == GameObject::GO_PRIEST)
 			continue;
-		if ((go->pos - pos).Length() <= outerProximity)
+		if ((go->pos + go->scale - pos - scale).Length() <= outerProximity)
 		{
 			 distance += go->pos - pos;
 		}
 	}
-	return distance.Normalized();
+	return -distance.Normalized();
 }
 
 bool Priest::IsEnemiesInInnerP()
@@ -103,7 +116,7 @@ bool Priest::IsEnemiesInInnerP()
 		GameObject *go = (GameObject *)*it;
 		if (go->type == GameObject::GO_PRIEST)
 			continue;
-		if ((go->pos - pos).Length() <= innerProximity)
+		if ((go->pos + go->scale - pos - scale).Length() <= innerProximity)
 		{
 			return true;
 		}

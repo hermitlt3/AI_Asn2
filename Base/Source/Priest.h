@@ -37,7 +37,9 @@ private:
 	int nextHealth;
 	// Personal timer
 	double timer;
-	
+	// float
+	float speed;
+
 	// Find if there are enemies within outer proximity, and return a Vector3 which is the flocking distance
 	Vector3 IsEnemiesInOuterP();
 	// Find if there are enemies within inner proximity, and return if there are enemies
