@@ -45,6 +45,9 @@ public:
 	{
 		GEO_AXES,
 		PRIEST,
+		GUARDIAN,
+		BOSS_ENEMY,
+		HIDE_ENEMY,
 
 		GEO_TEXT,
 		GEO_TEXT2,

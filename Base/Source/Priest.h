@@ -4,6 +4,7 @@
 #include "GameObject.h"
 #include "Messager.h"
 
+class Guardian;
 class Priest : public Messager, public GameObject
 {
 public:
@@ -23,6 +24,8 @@ public:
 	virtual void Update(double dt);
 	// Finite State Machine
 	void FSM();
+	// Set guardian
+	inline void SetGuardian(Guardian* _guardian) { guardian = _guardian; }
 
 private:
 	// Function to do things from to msg received
@@ -44,6 +47,11 @@ private:
 	Vector3 IsEnemiesInOuterP();
 	// Find if there are enemies within inner proximity, and return if there are enemies
 	bool IsEnemiesInInnerP();
+	// Finds and heals guardian
+	Guardian* guardian;
+	void HealsGuardian(double dt);
+	// Returns to idle state
+	void ReturnToIdle(double dt);
 };
 
 #endif

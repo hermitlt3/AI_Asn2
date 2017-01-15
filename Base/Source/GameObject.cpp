@@ -22,7 +22,8 @@ void GameObject::SetGO(
 	GameObject::GAMEOBJECT_TYPE type,
 	Vector3 scale,
 	Vector3 rotate,
-	Vector3 pos)
+	Vector3 pos,
+	bool _active)
 {
 	Mtx44 ro;
 	ro.SetToRotation(rotate.y, 0, 1, 0);
@@ -33,5 +34,5 @@ void GameObject::SetGO(
 	this->normal = ro * Vector3(1, 0, 0);
 	this->type = type;
 	this->pos = pos;
-	this->active = true;
+	this->active = _active;
 }

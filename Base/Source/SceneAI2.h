@@ -8,6 +8,7 @@
 using std::string;
 class Priest;
 class Guardian;
+class Enemy;
 class SceneAI2 : public SceneBase
 {
 
@@ -41,6 +42,9 @@ protected:
 	int m_objectCount;
 	Priest* priest;
 	Guardian* guardian;
+	Enemy* bossEnemy;
+	Enemy* hiddenEnemy[5];
+	Vector3 rdmPos[5];
 };
 
 

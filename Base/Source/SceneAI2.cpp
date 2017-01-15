@@ -16,6 +16,7 @@
 
 #include "Priest.h"
 #include "Guardian.h"
+#include "Enemy.h"
 
 using std::ifstream;
 
@@ -38,19 +39,29 @@ void SceneAI2::Init()
 	m_objectCount = 0;
 
 	priest = new Priest();
-	priest->type = GameObject::GO_PRIEST;
-	priest->pos = Vector3(30, 15, 0);
-	priest->scale = Vector3(1, 1, 1);
-	priest->active = true;
+	priest->SetGO(GameObject::GO_PRIEST, Vector3(1, 1, 1), Vector3(0, 0, 0), Vector3(30, 15, 0)); // TYPE, SCALE, ROTATION, POSITION
 	GameObjectManager::GetInstance()->m_goList.push_back(priest);
 
 	guardian = new Guardian();
-	guardian->type = GameObject::GO_GUARDIAN;
-	guardian->pos = Vector3(25, 10, 0);
-	guardian->scale = Vector3(1, 1, 1);
-	guardian->active = true;
+	guardian->SetGO(GameObject::GO_GUARDIAN, Vector3(1, 1, 1), Vector3(0, 0, 0), Vector3(25, 10, 0)); // TYPE, SCALE, ROTATION, POSITION
+	guardian->health = 100;
+	guardian->maxhealth = 100;
 	GameObjectManager::GetInstance()->m_goList.push_back(guardian);
+	priest->SetGuardian(guardian);
 
+	bossEnemy = new Enemy();
+	bossEnemy->SetGO(GameObject::GO_ENEMY, Vector3(1, 1, 1), Vector3(0, 0, 0), Vector3(100, 40, 0)); // TYPE, SCALE, ROTATION, POSITION
+	bossEnemy->health = 1000;
+	bossEnemy->SetIsLeader(true);
+	GameObjectManager::GetInstance()->m_goList.push_back(bossEnemy);
+
+	for (size_t i = 0; i < 5; ++i)
+	{
+		rdmPos[i] = Vector3(Math::RandFloatMinMax(0.f, 100.f), Math::RandFloatMinMax(0.f, 40.f), 0);
+		hiddenEnemy[i] = new Enemy();
+		hiddenEnemy[i]->SetGO(GameObject::GO_ENEMY, (1, 1, 1), (0, 0, 0), rdmPos[i], false); // TYPE, SCALE, ROTATION, POSITION, ACTIVE
+		GameObjectManager::GetInstance()->m_goList.push_back(hiddenEnemy[i]);
+	}
 }
 
 
@@ -98,13 +109,14 @@ void SceneAI2::UpdateMouse(double dt)
 void SceneAI2::UpdateKeys(double dt)
 {
 	if (KeyboardController::GetInstance()->IsKeyDown('W')) {
-		priest->health -= 5;
+		bossEnemy->health -= 1;
 	}
 	if (KeyboardController::GetInstance()->IsKeyDown('S')) {
 
 	}
 	if (KeyboardController::GetInstance()->IsKeyDown('A')) {
 		MessageBoard::GetInstance()->BroadcastMessage("INJURED");
+		guardian->health -= 1;
 	}
 	if (KeyboardController::GetInstance()->IsKeyDown('D')) {
 		MessageBoard::GetInstance()->BroadcastMessage("UNINJURED");
@@ -159,6 +171,12 @@ void SceneAI2::Update(double dt)
 	MessageBoard::GetInstance()->Update(dt);
 	fps = 1.f / (float)dt;
 	priest->Update(dt);
+	bossEnemy->Update(dt);
+	for (int i = 0; i < 5; ++i)
+	{
+		hiddenEnemy[i]->Update(dt);
+	}
+
 
 	UpdateKeys(dt);
 	UpdateMouse(dt);
@@ -172,12 +190,29 @@ void SceneAI2::RenderGO(GameObject *go)
 	switch (go->type)
 	{
 	case GameObject::GO_PRIEST:
-	case GameObject::GO_GUARDIAN:
 	{
 								  modelStack.PushMatrix();
 								  modelStack.Translate(go->pos.x, go->pos.y, go->pos.z);
 								  modelStack.Scale(go->scale.x, go->scale.y, go->scale.z);
 								  RenderMesh(meshList[PRIEST], false);
+								  modelStack.PopMatrix();
+								  break;
+	}
+	case GameObject::GO_GUARDIAN:
+	{
+									modelStack.PushMatrix();
+									modelStack.Translate(go->pos.x, go->pos.y, go->pos.z);
+									modelStack.Scale(go->scale.x, go->scale.y, go->scale.z);
+									RenderMesh(meshList[GUARDIAN], false);
+									modelStack.PopMatrix();
+									break;
+	}
+	case GameObject::GO_ENEMY:
+	{
+								  modelStack.PushMatrix();
+								  modelStack.Translate(go->pos.x, go->pos.y, go->pos.z);
+								  modelStack.Scale(go->scale.x, go->scale.y, go->scale.z);
+								  RenderMesh(meshList[BOSS_ENEMY], false);
 								  modelStack.PopMatrix();
 								  break;
 	}

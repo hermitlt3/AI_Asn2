@@ -1,5 +1,6 @@
 #include "Priest.h"
 #include "GameObjectManager.h"
+#include "Guardian.h"
 #include <vector>
 
 Priest::Priest() :
@@ -11,6 +12,7 @@ timer(0.0),
 speed(5.f)
 {
 	health = 100;
+	maxhealth = health;
 }
 
 Priest::~Priest()
@@ -22,6 +24,7 @@ void Priest::OnNotification(const std::string& msg)
 {
 	if (msg == "INJURED")
 	{
+		timer = 0.0;
 		currState = HEAL;
 	}
 	else if (msg == "UNINJURED")
@@ -35,12 +38,12 @@ void Priest::Update(double dt)
 	switch (currState) {
 	case HEAL:
 	{
-				 vel = Vector3(-speed, 0, 0);
+				 HealsGuardian(dt);
 				 break;
 	}
 	case IDLE:
 	{
-				 vel = Vector3(speed, 0, 0);
+				 ReturnToIdle(dt);
 				 break;
 	}
 	case RUN:
@@ -84,6 +87,10 @@ void Priest::FSM()
 				  break;
 		}
 		case HEAL:
+		{
+
+					 break;
+		}
 		case IDLE:
 		{
 					 // In OnNotification();
@@ -96,13 +103,11 @@ void Priest::FSM()
 Vector3 Priest::IsEnemiesInOuterP()
 {
 	Vector3 distance = 0.f;
-	for (std::vector<GameObject *>::iterator it = GameObjectManager::GetInstance()->m_goList.begin(); it != GameObjectManager::GetInstance()->m_goList.end(); ++it)
-	{
+	for (std::vector<GameObject *>::iterator it = GameObjectManager::GetInstance()->m_goList.begin(); it != GameObjectManager::GetInstance()->m_goList.end(); ++it) {
 		GameObject *go = (GameObject *)*it;
-		if (go->type == GameObject::GO_PRIEST)
+		if (go->type == GameObject::GO_PRIEST || go->type == GameObject::GO_GUARDIAN)
 			continue;
-		if ((go->pos + go->scale - pos - scale).Length() <= outerProximity)
-		{
+		if ((go->pos + go->scale - pos - scale).Length() <= outerProximity) {
 			 distance += go->pos - pos;
 		}
 	}
@@ -111,15 +116,42 @@ Vector3 Priest::IsEnemiesInOuterP()
 
 bool Priest::IsEnemiesInInnerP()
 {
-	for (std::vector<GameObject *>::iterator it = GameObjectManager::GetInstance()->m_goList.begin(); it != GameObjectManager::GetInstance()->m_goList.end(); ++it)
-	{
+	for (std::vector<GameObject *>::iterator it = GameObjectManager::GetInstance()->m_goList.begin(); it != GameObjectManager::GetInstance()->m_goList.end(); ++it) {
 		GameObject *go = (GameObject *)*it;
-		if (go->type == GameObject::GO_PRIEST)
+		if (go->type == GameObject::GO_PRIEST || go->type == GameObject::GO_GUARDIAN)
 			continue;
-		if ((go->pos + go->scale - pos - scale).Length() <= innerProximity)
-		{
+		if ((go->pos + go->scale - pos - scale).Length() <= innerProximity) {
 			return true;
 		}
 	}
 	return false;
+}
+
+void Priest::HealsGuardian(double dt)
+{
+	if (guardian->health < guardian->maxhealth) {
+		if ((guardian->pos - pos).Length() <= guardian->scale.x + scale.x) {
+			timer += dt;
+			vel.SetZero();
+		}
+		else
+			vel = (guardian->pos - pos).Normalized() * speed;
+
+		if (timer > 1.0) {
+			guardian->health += 5;
+			timer = 0.0;
+		}
+	}
+	else {
+		guardian->health = guardian->maxhealth;
+		SendMessage("UNINJURED");
+	}
+}
+
+void Priest::ReturnToIdle(double dt)
+{
+	if ((guardian->pos - pos).Length() >= innerProximity)
+		vel.SetZero();
+	else
+		vel = (pos - guardian->pos).Normalized() * speed;
 }

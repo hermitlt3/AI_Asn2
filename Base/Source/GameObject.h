@@ -12,6 +12,7 @@ struct GameObject
 		GO_PLAYER,
 		GO_PRIEST,
 		GO_GUARDIAN,
+		GO_ENEMY,
 
 		GO_TOTAL, //must be last
 	};
@@ -27,14 +28,16 @@ struct GameObject
 
 	float mass;
 	int health;
+	int maxhealth;
 
 	GameObject(GAMEOBJECT_TYPE typeValue = GO_NONE);
 	virtual ~GameObject();
 
-	void SetGO( GameObject::GAMEOBJECT_TYPE type = GameObject::GO_NONE,
-				Vector3 scale = (1.f, 1.f, 1.f),
-				Vector3 rotate = (0.f, 0.f, 0.f),
-				Vector3 pos = (0.f, 0.f, 0.f)
+	void SetGO(GameObject::GAMEOBJECT_TYPE type = GameObject::GO_NONE,
+		Vector3 scale = (1.f, 1.f, 1.f),
+		Vector3 rotate = (0.f, 0.f, 0.f),
+		Vector3 pos = (0.f, 0.f, 0.f),
+		bool _active = true
 				);
 };
 
