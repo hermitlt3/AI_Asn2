@@ -150,8 +150,8 @@ void Priest::HealsGuardian(double dt)
 
 void Priest::ReturnToIdle(double dt)
 {
-	if ((guardian->pos - pos).Length() >= innerProximity)
-		vel.SetZero();
-	else
+	if ((guardian->pos - pos).Length() < innerProximity)
 		vel = (pos - guardian->pos).Normalized() * speed;
+	else
+		vel.SetZero();
 }

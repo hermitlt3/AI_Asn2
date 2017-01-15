@@ -39,7 +39,7 @@ void SceneAI2::Init()
 	m_objectCount = 0;
 
 	priest = new Priest();
-	priest->SetGO(GameObject::GO_PRIEST, Vector3(1, 1, 1), Vector3(0, 0, 0), Vector3(30, 15, 0)); // TYPE, SCALE, ROTATION, POSITION
+	priest->SetGO(GameObject::GO_PRIEST, Vector3(1, 1, 1), Vector3(0, 0, 0), Vector3(10, 15, 0)); // TYPE, SCALE, ROTATION, POSITION
 	GameObjectManager::GetInstance()->m_goList.push_back(priest);
 
 	guardian = new Guardian();
@@ -116,7 +116,6 @@ void SceneAI2::UpdateKeys(double dt)
 	}
 	if (KeyboardController::GetInstance()->IsKeyDown('A')) {
 		MessageBoard::GetInstance()->BroadcastMessage("INJURED");
-		guardian->health -= 1;
 	}
 	if (KeyboardController::GetInstance()->IsKeyDown('D')) {
 		MessageBoard::GetInstance()->BroadcastMessage("UNINJURED");
@@ -142,6 +141,15 @@ void SceneAI2::UpdatePhysics(double dt)
 
 		go->pos += go->vel * (float)dt;
 		float radius = go->scale.x;
+
+		if (go->pos.x < -go->scale.x * 2)
+			go->pos.x = m_worldWidth + go->scale.x * 2;
+		else if (go->pos.x > m_worldWidth + go->scale.x * 2)
+			go->pos.x = -go->scale.x * 2;
+		if (go->pos.y < -go->scale.y * 2)
+			go->pos.y = m_worldHeight + go->scale.y * 2;
+		else if (go->pos.y > m_worldHeight + go->scale.y * 2)
+			go->pos.y = -go->scale.y * 2;
 
 		//Exercise 8a: handle collision between GO_BALL and GO_BALL using velocity swap
 		for (std::vector<GameObject *>::iterator ho = it + 1; ho != GameObjectManager::GetInstance()->m_goList.end(); ++ho)
