@@ -5,8 +5,8 @@
 
 Priest::Priest() :
 currState(IDLE),
-innerProximity(15.f),
-outerProximity(30.f),
+innerProximity(25.f),
+outerProximity(35.f),
 nextHealth(health),
 timer(0.0),
 speed(5.f)
@@ -137,7 +137,7 @@ void Priest::HealsGuardian(double dt)
 			vel = (guardian->pos - pos).Normalized() * speed;
 
 		if (timer > 1.0) {
-			guardian->health += 5;
+			guardian->health += 10;
 			timer = 0.0;
 		}
 	}

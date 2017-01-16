@@ -27,6 +27,19 @@ public:
 	// Set guardian
 	inline void SetGuardian(Guardian* _guardian) { guardian = _guardian; }
 
+	std::string GetState() {
+		switch (currState) {
+		case 0:
+			return "IDLE";
+		case 1:
+			return "HEAL";
+		case 2:
+			return "RUN";
+		case 3:
+			return "DIE";
+		}
+	}
+
 private:
 	// Function to do things from to msg received
 	virtual void OnNotification(const std::string& msg);

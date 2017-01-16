@@ -113,8 +113,7 @@ void SceneAI2::UpdateKeys(double dt)
 {
 	if (KeyboardController::GetInstance()->IsKeyDown('W')) {
 		//guardian->health -= 1;
-		//MessageBoard::GetInstance()->BroadcastMessage("INJURED");
-		priest->pos.y += 5.f * dt;
+		MessageBoard::GetInstance()->BroadcastMessage("INJURED");
 	}
 	if (KeyboardController::GetInstance()->IsKeyDown('S')) {
 		MessageBoard::GetInstance()->BroadcastMessage("UNINJURED");
@@ -123,19 +122,16 @@ void SceneAI2::UpdateKeys(double dt)
 		MessageBoard::GetInstance()->BroadcastMessage("UNHARMED");
 	}
 	if (KeyboardController::GetInstance()->IsKeyDown('D')) {
-		MessageBoard::GetInstance()->BroadcastMessage("UNDER ATTACK");
+		priest->health -= 1;
 	}
 	if (KeyboardController::GetInstance()->IsKeyDown('P'))
 	{
-		std::cout << "Original Position: " << guardian->GetOriginalPosition().x << " " <<
-			guardian->GetOriginalPosition().y << " " << guardian->GetOriginalPosition().z << std::endl;
-		priest->health -= 1;
+
 	}
 	if (KeyboardController::GetInstance()->IsKeyDown('O'))
 	{
 		bossEnemy->health = 0;
 	}
-	std::cout << priest->health << std::endl;
 	//
 	double x, y;
 	Application::GetCursorPos(&x, &y);
@@ -290,8 +286,18 @@ void SceneAI2::Render()
 	{
 		ss.str("");
 		ss << i << ": Message Board receives \"" << MessageBoard::GetInstance()->GetList()[i] << "\"";
-		RenderTextOnScreen(meshList[GEO_TEXT], ss.str(), Color(1, 1, 1), 1, 1, yCoordinates - i * 1.5f);
+		RenderTextOnScreen(meshList[GEO_TEXT], ss.str(), Color(1, 1, 0), 1, 1, yCoordinates - i * 1.5f);
 	}
+	std::ostringstream ss2;
+	ss2.str("");
+	ss2 << "Priest state: " << priest->GetState();
+	RenderTextOnScreen(meshList[GEO_TEXT], ss2.str(), Color(1, 1, 0), 1, 50, 58);
+	ss2.str("");
+	ss2 << "Guardian state: " << guardian->GetState();
+	RenderTextOnScreen(meshList[GEO_TEXT], ss2.str(), Color(1, 1, 0), 1, 50, 54);
+	ss2.str("");
+	ss2 << "Enemy state: " << bossEnemy->GetState();
+	RenderTextOnScreen(meshList[GEO_TEXT], ss2.str(), Color(1, 1, 0), 1, 50, 50);
 }
 
 void SceneAI2::Exit()

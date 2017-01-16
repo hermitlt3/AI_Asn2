@@ -31,6 +31,21 @@ public:
 	void SetOriginalPosition(Vector3 position);
 	Vector3 GetOriginalPosition();
 
+	std::string GetState() {
+		switch (currState) {
+		case 0:
+			return "IDLE";
+		case 1:
+			return "CHASE";
+		case 2:
+			return "RETURN";
+		case 3:
+			return "ATTACK";
+		case 4:
+			return "DIE";
+		}
+	}
+
 private:
 	// Function to do things from to msg received
 	virtual void OnNotification(const std::string& msg);

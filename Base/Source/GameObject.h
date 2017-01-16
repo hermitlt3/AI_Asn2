@@ -39,6 +39,8 @@ struct GameObject
 		Vector3 pos = (0.f, 0.f, 0.f),
 		bool _active = true
 				);
+
+	virtual std::string GetState(){};
 };
 
 #endif

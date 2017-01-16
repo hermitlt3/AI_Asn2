@@ -100,14 +100,14 @@ void Guardian::Update(double dt)
 	case RETURN:
 	{
 		Returnposition(dt);
-		cout << "Returning" << endl;
+		//cout << "Returning" << endl;
 		break;
 	}
 	case ATTACK:
 	{
 		this->vel.SetZero();
 		this->normal = (_target->pos - pos).Normalized();
-		cout << "Attacking" << endl;
+		//cout << "Attacking" << endl;
 		break;
 	}
 	case DIE:

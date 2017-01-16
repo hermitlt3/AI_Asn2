@@ -33,6 +33,19 @@ public:
 	// Finite state machine
 	void FSM();
 
+	std::string GetState() {
+		switch (currState) {
+		case 0:
+			return "IDLE";
+		case 1:
+			return "CHASE";
+		case 2:
+			return "ATTACK";
+		case 3:
+			return "DIE";
+		}
+	}
+
 private:	
 	// Check if it is the main enemy
 	bool isLeader;
