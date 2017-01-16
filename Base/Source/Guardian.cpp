@@ -129,6 +129,7 @@ void Guardian::OnNotification(const std::string& msg)
 	if (msg == "UNHARMED")
 	{
 		currState = RETURN;
+		CheckHP();
 	}
 }
 
