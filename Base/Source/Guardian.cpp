@@ -1,15 +1,15 @@
 #include "Guardian.h"
-#include "Priest.h"
 #include "Enemy.h"
 #include "GameObjectManager.h"
 #include <vector>
+#include <algorithm>
 #include <iostream>
 using std::cout;
 using std::endl;
 
 Guardian::Guardian() :
 timer(0.0),
-currState(RETURN), Speed(4.0f), Aggrorange(2.f)
+currState(IDLE), Speed(15.0f), Aggrorange(2.f)
 {
 	health = 100;
 	maxhealth = health;
@@ -46,16 +46,12 @@ void Guardian::FSM()
 		{
 		case CHASE:
 		{
-			
 			break;
 		}
 		case ATTACK:
 		{
 			//This is in OnNotification();
-			if (!InAggroRange())
-			{
-				currState = RETURN;
-			}
+			
 			break;
 		}
 		case RETURN:
@@ -85,7 +81,8 @@ void Guardian::FSM()
 
 void Guardian::Update(double dt)
 {
-	if (_target == nullptr)
+	
+	if (_target == nullptr || _Priest == nullptr)
 	{
 		return;
 	}
@@ -97,7 +94,7 @@ void Guardian::Update(double dt)
 	}
 	case CHASE:
 	{
-	
+		GoToPriest(dt);
 		break;
 	}
 	case RETURN:
@@ -108,6 +105,8 @@ void Guardian::Update(double dt)
 	}
 	case ATTACK:
 	{
+		this->vel.SetZero();
+		this->normal = (_target->pos - pos).Normalized();
 		cout << "Attacking" << endl;
 		break;
 	}
@@ -125,7 +124,6 @@ void Guardian::OnNotification(const std::string& msg)
 {
 	if (msg == "UNDER ATTACK")
 	{
-		LocateTarget();
 		currState = CHASE;
 	}
 	if (msg == "UNHARMED")
@@ -156,9 +154,59 @@ void Guardian::CheckHP()
 	}
 }
 
+void Guardian::GoToPriest(double dt)
+{
+	distancefromPriest = DistBetween(_Priest->pos, this->pos);
+	if (distancefromPriest > 15.f)
+	{
+		vel = (_Priest->pos - pos).Normalize() * Speed;
+		direction = vel;
+		this->normal = direction.Normalized();
+	}
+	else if (distancefromPriest < 15.f)
+	{
+
+		LocateTarget();
+	}
+}
+
 void Guardian::LocateTarget()
 {
+	nearestTarget = nullptr;
+	float nearestdistance = 100.f;
 	
+	for (vector<GameObject*>::iterator it = GameObjectManager::GetInstance()->m_goList.begin(); it != GameObjectManager::GetInstance()->m_goList.end(); ++it) 
+	{
+		if ((*it)->type == GO_ENEMY) {
+			if (((*it)->pos - pos).Length() < nearestdistance) {
+				nearestTarget = static_cast<GameObject*>(*it);
+				nearestdistance = (nearestTarget->pos - pos).Length();
+			}
+		}
+	}
+	if (nearestTarget)
+	{
+		_target = nearestTarget;
+		ChaseTarget(_target);
+		SetTarget(_target);
+	}
+
+	
+}
+
+void Guardian::ChaseTarget(GameObject *target)
+{
+	float distancefromtarget = DistBetween(target->pos, this->pos);
+	if (distancefromtarget > 4.0f)
+	{
+		vel = (target->pos - pos).Normalize() * Speed;
+		direction = vel;
+		this->normal = direction.Normalized();
+	}
+	else
+	{
+		currState = ATTACK;
+	}
 }
 
 bool Guardian::InAggroRange()

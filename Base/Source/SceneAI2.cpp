@@ -39,7 +39,7 @@ void SceneAI2::Init()
 	m_objectCount = 0;
 
 	priest = new Priest();
-	priest->SetGO(GameObject::GO_PRIEST, Vector3(1, 1, 1), Vector3(0, 0, 0), Vector3(10, 15, 0)); // TYPE, SCALE, ROTATION, POSITION
+	priest->SetGO(GameObject::GO_PRIEST, Vector3(1, 1, 1), Vector3(0, 0, 0), Vector3(100, 15, 0)); // TYPE, SCALE, ROTATION, POSITION
 	GameObjectManager::GetInstance()->m_goList.push_back(priest);
 
 	guardian = new Guardian();
@@ -48,6 +48,7 @@ void SceneAI2::Init()
 	guardian->health = 100;
 	guardian->maxhealth = 100;
 	GameObjectManager::GetInstance()->m_goList.push_back(guardian);
+	guardian->SetPriest(priest);
 	priest->SetGuardian(guardian);
 
 	bossEnemy = new Enemy();
