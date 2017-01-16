@@ -10,6 +10,31 @@ class Guardian : public GameObject, public Messager
 {
 public:
 	// States
+
+	//New State Types
+	enum GUARDIAN_SCENARIO
+	{
+		FSM_HELPING_PRIEST = 0,
+		FSM_DEFENDING,
+		FSM_DEAD,
+		TOTAL,
+	};
+	enum HELPING_STATES
+	{
+		HELP_IDLE = 0,
+		HELP_CHASE,
+		HELP_ATTACK,
+		HELP_RETURN,
+		TOTAL_HELP,
+	};
+	enum DEFENDING_STATES
+	{
+		DEFEND_IDLE = 0,
+		DEFEND_ATTACK,
+		DEFEND_RETURN,
+		TOTAL_DEFEND,
+	};
+
 	enum GUARDIAN_STATES
 	{
 		IDLE = 0,
