@@ -9,7 +9,7 @@ using std::endl;
 
 Guardian::Guardian() :
 timer(0.0),
-currState(IDLE), Speed(15.0f), Aggrorange(2.f)
+currState(IDLE), Speed(5.0f), Aggrorange(2.f)
 {
 	health = 100;
 	maxhealth = health;
@@ -129,6 +129,7 @@ void Guardian::OnNotification(const std::string& msg)
 	if (msg == "UNHARMED")
 	{
 		currState = RETURN;
+		CheckHP();
 	}
 }
 
@@ -179,7 +180,7 @@ void Guardian::LocateTarget()
 	{
 		if ((*it)->type == GO_ENEMY) {
 			if (((*it)->pos - pos).Length() < nearestdistance) {
-				nearestTarget = static_cast<GameObject*>(*it);
+				nearestTarget = (*it);
 				nearestdistance = (nearestTarget->pos - pos).Length();
 			}
 		}

@@ -52,7 +52,7 @@ public:
 		GEO_TEXT,
 		GEO_TEXT2,
 
-		PLAYER,
+		BACKGROUND,
 
 		NUM_GEOMETRY,
 	};
