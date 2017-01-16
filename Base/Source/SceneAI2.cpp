@@ -110,7 +110,7 @@ void SceneAI2::UpdateMouse(double dt)
 void SceneAI2::UpdateKeys(double dt)
 {
 	if (KeyboardController::GetInstance()->IsKeyDown('W')) {
-		bossEnemy->health -= 1;
+		bossEnemy->health -= 100;
 	}
 	if (KeyboardController::GetInstance()->IsKeyDown('S')) {
 		guardian->pos += Vector3(10,0,0);
@@ -152,14 +152,14 @@ void SceneAI2::UpdatePhysics(double dt)
 		go->pos += go->vel * (float)dt;
 		float radius = go->scale.x;
 
-		if (go->pos.x < -go->scale.x * 2)
-			go->pos.x = m_worldWidth + go->scale.x * 2;
-		else if (go->pos.x > m_worldWidth + go->scale.x * 2)
-			go->pos.x = -go->scale.x * 2;
-		if (go->pos.y < -go->scale.y * 2)
-			go->pos.y = m_worldHeight + go->scale.y * 2;
-		else if (go->pos.y > m_worldHeight + go->scale.y * 2)
-			go->pos.y = -go->scale.y * 2;
+		if (go->pos.x < -go->scale.x)
+			go->pos.x = m_worldWidth + go->scale.x;
+		else if (go->pos.x > m_worldWidth + go->scale.x)
+			go->pos.x = -go->scale.x;
+		if (go->pos.y < -go->scale.y)
+			go->pos.y = m_worldHeight + go->scale.y;
+		else if (go->pos.y > m_worldHeight + go->scale.y)
+			go->pos.y = -go->scale.y;
 
 		//Exercise 8a: handle collision between GO_BALL and GO_BALL using velocity swap
 		for (std::vector<GameObject *>::iterator ho = it + 1; ho != GameObjectManager::GetInstance()->m_goList.end(); ++ho)
@@ -191,6 +191,7 @@ void SceneAI2::Update(double dt)
 	priest->Update(dt);
 	bossEnemy->Update(dt);
 	guardian->Update(dt);
+
 	for (int i = 0; i < 5; ++i)
 	{
 		hiddenEnemy[i]->Update(dt);

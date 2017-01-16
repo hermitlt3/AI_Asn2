@@ -29,7 +29,7 @@ void Enemy::Update(double dt)
 	}
 		vel = -getNearestFriendly.Normalized() * speed;
 	
-	if (health < 999 && isLeader)
+	if (health <= 999 && isLeader)
 	{
 		if (!isSent) {
 			SendMessage("AMBUSH");

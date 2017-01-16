@@ -88,7 +88,6 @@ void Priest::FSM()
 		}
 		case HEAL:
 		{
-
 					 break;
 		}
 		case IDLE:
