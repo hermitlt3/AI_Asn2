@@ -143,7 +143,6 @@ void Priest::HealsGuardian(double dt)
 	}
 	else {
 		guardian->health = guardian->maxhealth;
-		SendMessage("UNINJURED");
 	}
 }
 

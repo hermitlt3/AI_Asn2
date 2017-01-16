@@ -103,18 +103,26 @@ void SceneBase::Init()
 	}
 
 	meshList[GEO_AXES] = MeshBuilder::GenerateAxes("reference", 1000, 1000, 1000);
-	meshList[PRIEST] = MeshBuilder::GenerateSphere("priest", Color(0, 0, 1), 36.f, 36.f, 1.f);
-	meshList[GUARDIAN] = MeshBuilder::GenerateSphere("guardian", Color(0, 1, 0), 36.f, 36.f, 1.f);
-	meshList[BOSS_ENEMY] = MeshBuilder::GenerateSphere("boss", Color(1, 0, 0), 36.f, 36.f, 1.f);
-	meshList[HIDE_ENEMY] = MeshBuilder::GenerateSphere("hidden", Color(1, 0, 1), 36.f, 36.f, 1.f);
 
-	meshList[PLAYER] = MeshBuilder::GenerateCube("player", Color(1, 1, 1), 5.f);
+	meshList[PRIEST] = MeshBuilder::GenerateQuad("priest", Color(0, 0, 1), 2.f);
+	meshList[PRIEST]->textureID = LoadTGA("Image//Resource.tga");
+
+	meshList[GUARDIAN] = MeshBuilder::GenerateQuad("guardian", Color(0, 1, 0), 2.f);
+	meshList[GUARDIAN]->textureID = LoadTGA("Image//Player.tga");
+
+	meshList[BOSS_ENEMY] = MeshBuilder::GenerateQuad("boss", Color(1, 0, 0), 2.f);
+	meshList[BOSS_ENEMY]->textureID = LoadTGA("Image//Passive.tga");
+
+	meshList[HIDE_ENEMY] = MeshBuilder::GenerateSphere("hidden", Color(1, 0, 1), 36.f, 36.f, 1.f);
 
 	meshList[GEO_TEXT] = MeshBuilder::GenerateText("text", 16, 16);
 	meshList[GEO_TEXT]->textureID = LoadTGA("Image//joystix.tga");
 
 	meshList[GEO_TEXT2] = MeshBuilder::GenerateText("text2", 16, 16);
 	meshList[GEO_TEXT2]->textureID = LoadTGA("Image//dsouls.tga");
+
+	meshList[BACKGROUND] = MeshBuilder::GenerateQuad("bg", Color(0, 0, 0), 1.f);
+	meshList[BACKGROUND]->textureID = LoadTGA("Image//bg.tga");
 	
 	bLightEnabled = false;
 }

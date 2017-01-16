@@ -39,12 +39,12 @@ void SceneAI2::Init()
 	m_objectCount = 0;
 
 	priest = new Priest();
-	priest->SetGO(GameObject::GO_PRIEST, Vector3(1, 1, 1), Vector3(0, 0, 0), Vector3(100, 15, 0)); // TYPE, SCALE, ROTATION, POSITION
+	priest->SetGO(GameObject::GO_PRIEST, Vector3(5, 5, 5), Vector3(0, 0, 0), Vector3(100, 50, 0)); // TYPE, SCALE, ROTATION, POSITION
 	GameObjectManager::GetInstance()->m_goList.push_back(priest);
 
 	guardian = new Guardian();
-	guardian->SetGO(GameObject::GO_GUARDIAN, Vector3(1, 1, 1), Vector3(0, 0, 0), Vector3(25, 10, 0)); // TYPE, SCALE, ROTATION, POSITION
-	guardian->SetOriginalPosition(Vector3(25, 10, 0));
+	guardian->SetGO(GameObject::GO_GUARDIAN, Vector3(5, 5, 5), Vector3(0, 0, 0), Vector3(80, 40, 0)); // TYPE, SCALE, ROTATION, POSITION
+	guardian->SetOriginalPosition(Vector3(80, 40, 0));
 	guardian->health = 100;
 	guardian->maxhealth = 100;
 	GameObjectManager::GetInstance()->m_goList.push_back(guardian);
@@ -52,14 +52,15 @@ void SceneAI2::Init()
 	priest->SetGuardian(guardian);
 
 	bossEnemy = new Enemy();
-	bossEnemy->SetGO(GameObject::GO_ENEMY, Vector3(1, 1, 1), Vector3(0, 0, 0), Vector3(100, 40, 0)); // TYPE, SCALE, ROTATION, POSITION
+	bossEnemy->SetGO(GameObject::GO_ENEMY, Vector3(5, 5, 5), Vector3(0, 0, 0), Vector3(100, 35, 0)); // TYPE, SCALE, ROTATION, POSITION
 	bossEnemy->health = 1000;
 	bossEnemy->SetIsLeader(true);
 	GameObjectManager::GetInstance()->m_goList.push_back(bossEnemy);
 
 	for (size_t i = 0; i < 5; ++i)
 	{
-		rdmPos[i] = Vector3(Math::RandFloatMinMax(0.f, 100.f), Math::RandFloatMinMax(0.f, 40.f), 0);
+		//rdmPos[i] = Vector3(Math::RandFloatMinMax(0.f, 100.f), Math::RandFloatMinMax(0.f, 40.f), 0);
+		rdmPos[i] = Vector3(i * 10, 1 * 10, 0);
 		hiddenEnemy[i] = new Enemy();
 		hiddenEnemy[i]->SetGO(GameObject::GO_ENEMY, (1, 1, 1), (0, 0, 0), rdmPos[i], false); // TYPE, SCALE, ROTATION, POSITION, ACTIVE
 		GameObjectManager::GetInstance()->m_goList.push_back(hiddenEnemy[i]);
@@ -111,10 +112,12 @@ void SceneAI2::UpdateMouse(double dt)
 void SceneAI2::UpdateKeys(double dt)
 {
 	if (KeyboardController::GetInstance()->IsKeyDown('W')) {
-		bossEnemy->health -= 100;
+		//guardian->health -= 1;
+		//MessageBoard::GetInstance()->BroadcastMessage("INJURED");
+		priest->pos.y += 5.f * dt;
 	}
 	if (KeyboardController::GetInstance()->IsKeyDown('S')) {
-		guardian->pos += Vector3(10,0,0);
+		MessageBoard::GetInstance()->BroadcastMessage("UNINJURED");
 	}
 	if (KeyboardController::GetInstance()->IsKeyDown('A')) {
 		MessageBoard::GetInstance()->BroadcastMessage("UNHARMED");
@@ -132,6 +135,7 @@ void SceneAI2::UpdateKeys(double dt)
 	{
 		bossEnemy->health = 0;
 	}
+	std::cout << priest->health << std::endl;
 	//
 	double x, y;
 	Application::GetCursorPos(&x, &y);
@@ -156,11 +160,11 @@ void SceneAI2::UpdatePhysics(double dt)
 		if (go->pos.x < -go->scale.x)
 			go->pos.x = m_worldWidth + go->scale.x;
 		else if (go->pos.x > m_worldWidth + go->scale.x)
-			go->pos.x = -go->scale.x;
+			go->pos.x = 0;
 		if (go->pos.y < -go->scale.y)
 			go->pos.y = m_worldHeight + go->scale.y;
 		else if (go->pos.y > m_worldHeight + go->scale.y)
-			go->pos.y = -go->scale.y;
+			go->pos.y = 0;
 
 		//Exercise 8a: handle collision between GO_BALL and GO_BALL using velocity swap
 		for (std::vector<GameObject *>::iterator ho = it + 1; ho != GameObjectManager::GetInstance()->m_goList.end(); ++ho)
@@ -205,6 +209,7 @@ void SceneAI2::Update(double dt)
 
 	priest->FSM();
 	guardian->FSM();
+	bossEnemy->FSM();
 }
 
 void SceneAI2::RenderGO(GameObject *go)
@@ -272,6 +277,12 @@ void SceneAI2::Render()
 			RenderGO(go);
 		}
 	}
+
+	modelStack.PushMatrix();
+	modelStack.Translate(m_worldWidth / 2, m_worldHeight / 2, -5);
+	modelStack.Scale(177, 100, 1);
+	RenderMesh(meshList[BACKGROUND], false);
+	modelStack.PopMatrix();
 
 	float yCoordinates = 58.f;
 	std::ostringstream ss;

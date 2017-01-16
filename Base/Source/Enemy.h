@@ -44,4 +44,10 @@ private:
 	GameObject* target;
 	// Personal timer
 	double timer;
+	// Enemy states
+	ENEMY_STATES currState;
+	// Function to chase friendly
+	void ChaseFriendly();
+	// Function to attack target
+	void AttackTarget(double dt);
 };
