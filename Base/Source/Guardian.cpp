@@ -103,7 +103,7 @@ void Guardian::Update(double dt)
 	case RETURN:
 	{
 		Returnposition(dt);
-		cout << "Returning" << endl;
+		//cout << "Returning" << endl;
 		break;
 	}
 	case ATTACK:
@@ -116,7 +116,7 @@ void Guardian::Update(double dt)
 			_target->health -= (float)Math::RandFloatMinMax(10.f, 15.f);
 			timer = 0;
 		}
-		cout << "Attacking" << endl;
+		//cout << "Attacking" << endl;
 		break;
 	}
 	case DIE:

@@ -25,6 +25,7 @@ public:
 	virtual void OnNotification(const std::string& msg) = 0;
 	// Update
 	virtual void Update(double dt) = 0;
+
 private:
 	// The message board
 	MessageBoard* mb;
