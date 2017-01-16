@@ -10,6 +10,14 @@
 class Enemy : public GameObject, public Messager
 {
 public:
+	enum ENEMY_STATES
+	{
+		IDLE,
+		CHASE,
+		ATTACK,
+		DIE
+	};
+
 	// Constructor
 	Enemy();
 	// Destructor
@@ -22,6 +30,8 @@ public:
 	inline void SetSpeed(const float& spd) { speed = spd; }
 	// Function to do things from to msg received
 	virtual void OnNotification(const std::string& msg);
+	// Finite state machine
+	void FSM();
 
 private:	
 	// Check if it is the main enemy
@@ -30,4 +40,8 @@ private:
 	bool isSent;
 	// Speed of enemy
 	float speed;
+	// Target
+	GameObject* target;
+	// Personal timer
+	double timer;
 };

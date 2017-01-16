@@ -59,3 +59,7 @@ void Enemy::OnNotification(const std::string& str)
 	}
 }
 
+void Enemy::FSM()
+{
+
+}
