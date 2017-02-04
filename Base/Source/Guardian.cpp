@@ -13,6 +13,7 @@ currState(IDLE), Speed(10.0f), Aggrorange(5.f)
 {
 	health = 100;
 	maxhealth = health;
+	nexthealth = health;
 }
 
 Guardian::~Guardian()
@@ -75,7 +76,7 @@ void Guardian::FSM()
 		}
 		case IDLE:
 		{
-			if (InAggroRange())
+			if (health != nexthealth)
 			{
 				LocateTarget();
 			}
@@ -133,6 +134,7 @@ void Guardian::Update(double dt)
 		}
 	}
 	}
+	nexthealth = health;
 }
 
 void Guardian::OnNotification(const std::string& msg)

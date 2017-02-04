@@ -73,6 +73,7 @@ private:
 	void CheckHP();
 	bool InAggroRange();
 
+	float nexthealth;
 	float Speed;
 	Vector3 direction;
 	float Aggrorange;
