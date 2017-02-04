@@ -9,7 +9,7 @@ using std::endl;
 
 Guardian::Guardian() :
 timer(0.0),
-currState(IDLE), Speed(5.0f), Aggrorange(5.f)
+currState(IDLE), Speed(10.0f), Aggrorange(10.f)
 {
 	health = 100;
 	maxhealth = health;
@@ -50,7 +50,6 @@ void Guardian::FSM()
 		}
 		case ATTACK:
 		{
-			//This is in OnNotification();
 			if (!InAggroRange())
 			{
 				currState = RETURN;
@@ -62,20 +61,22 @@ void Guardian::FSM()
 			if (pos == OriginalPosition)
 			{
 				currState = IDLE;
+				CheckHP();
 				
+			}
+			if (InAggroRange())
+			{
+				LocateTarget();
 			}
 
 			break;
 		}
 		case IDLE:
 		{
-			//Here, The guard will check if he needs heals if he isn't at full health
-			//State Transition for this state is in OnNotification();
 			if (InAggroRange())
 			{
-				currState = ATTACK;
+				LocateTarget();
 			}
-			
 			
 		}
 		}
@@ -102,6 +103,7 @@ void Guardian::Update(double dt)
 	}
 	case RETURN:
 	{
+		if (this->pos != OriginalPosition)
 		Returnposition(dt);
 		//cout << "Returning" << endl;
 		break;
@@ -109,14 +111,13 @@ void Guardian::Update(double dt)
 	case ATTACK:
 	{
 		this->vel.SetZero();
-		this->normal = (_target->pos - pos).Normalized();
+		this->normal = (_target->pos - this->pos).Normalized();
 		timer += dt;
 		if (timer < 1.f)
 		{
 			_target->health -= (float)Math::RandFloatMinMax(10.f, 15.f);
 			timer = 0;
 		}
-		//cout << "Attacking" << endl;
 		break;
 	}
 	case DIE:
@@ -167,13 +168,13 @@ void Guardian::CheckHP()
 void Guardian::GoToPriest(double dt)
 {
 	distancefromPriest = DistBetween(_Priest->pos, this->pos);
-	if (distancefromPriest > 15.f)
+	if (distancefromPriest > 20.f)
 	{
 		vel = (_Priest->pos - pos).Normalize() * Speed;
 		direction = vel;
 		this->normal = direction.Normalized();
 	}
-	else if (distancefromPriest < 15.f)
+	else if (distancefromPriest < 20.f)
 	{
 
 		LocateTarget();
@@ -232,4 +233,9 @@ bool Guardian::InAggroRange()
 		}
 	}
 	return false;
+}
+
+float Guardian::gethealth()
+{
+	return health;
 }

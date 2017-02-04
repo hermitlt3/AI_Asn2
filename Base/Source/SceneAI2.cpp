@@ -298,6 +298,10 @@ void SceneAI2::Render()
 	ss2.str("");
 	ss2 << "Enemy state: " << bossEnemy->GetState();
 	RenderTextOnScreen(meshList[GEO_TEXT], ss2.str(), Color(1, 1, 0), 1, 50, 50);
+	ss2.str("");
+	ss2 << "Guardian Health: " << guardian->gethealth();
+	RenderTextOnScreen(meshList[GEO_TEXT], ss2.str(), Color(1, 1, 0), 1, 50, 46);
+
 }
 
 void SceneAI2::Exit()
