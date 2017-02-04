@@ -9,7 +9,7 @@ using std::endl;
 
 Guardian::Guardian() :
 timer(0.0),
-currState(IDLE), Speed(10.0f), Aggrorange(10.f)
+currState(IDLE), Speed(10.0f), Aggrorange(5.f)
 {
 	health = 100;
 	maxhealth = health;
@@ -58,18 +58,20 @@ void Guardian::FSM()
 		}
 		case RETURN:
 		{
-			if (pos == OriginalPosition)
-			{
-				currState = IDLE;
-				CheckHP();
-				
-			}
 			if (InAggroRange())
 			{
 				LocateTarget();
 			}
 
 			break;
+		}
+		case BEING_HEALED:
+		{
+			if (health == maxhealth)
+			{
+				SendMessage("UNINJURED");
+				currState = IDLE;
+			}
 		}
 		case IDLE:
 		{
@@ -103,7 +105,6 @@ void Guardian::Update(double dt)
 	}
 	case RETURN:
 	{
-		if (this->pos != OriginalPosition)
 		Returnposition(dt);
 		//cout << "Returning" << endl;
 		break;
@@ -118,6 +119,10 @@ void Guardian::Update(double dt)
 			_target->health -= (float)Math::RandFloatMinMax(10.f, 15.f);
 			timer = 0;
 		}
+		break;
+	}
+	case BEING_HEALED:
+	{
 		break;
 	}
 	case DIE:
@@ -139,17 +144,23 @@ void Guardian::OnNotification(const std::string& msg)
 	if (msg == "UNHARMED")
 	{
 		currState = RETURN;
-		CheckHP();
 	}
 }
 
 void Guardian::Returnposition(double dt)
 {
-	if (pos != OriginalPosition)
+	distancefromoriginalposition = DistBetween(OriginalPosition,this->pos);
+	if (distancefromoriginalposition > 0.1f)
 	{
-		vel = (OriginalPosition - pos).Normalize() * Speed;
+		vel = (this->OriginalPosition - this->pos).Normalize() * Speed;
 		direction = vel;
 		this->normal = direction.Normalized();
+	}
+	else
+	{
+		this->vel.SetZero();
+		currState = BEING_HEALED;
+		CheckHP();
 	}
 }
 

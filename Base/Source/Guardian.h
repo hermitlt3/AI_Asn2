@@ -16,6 +16,7 @@ public:
 		CHASE,
 		RETURN,
 		ATTACK,
+		BEING_HEALED,
 		DIE
 	};
 	// Constructor
@@ -43,6 +44,8 @@ public:
 		case 3:
 			return "ATTACK";
 		case 4:
+			return "RECOVERING";
+		case 5:
 			return "DIE";
 		}
 	}
@@ -70,11 +73,11 @@ private:
 	void CheckHP();
 	bool InAggroRange();
 
-	float nexthealth;
 	float Speed;
 	Vector3 direction;
 	float Aggrorange;
 	float distancefromPriest;
+	float distancefromoriginalposition;
 };
 
 static float DistBetween(const Vector3& posOne, const Vector3& posTwo)
