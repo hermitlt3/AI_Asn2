@@ -286,7 +286,7 @@ void SceneAI2::Render()
 	{
 		ss.str("");
 		ss << i << ": Message Board receives \"" << MessageBoard::GetInstance()->GetList()[i] << "\"";
-		RenderTextOnScreen(meshList[GEO_TEXT], ss.str(), Color(1, 1, 0), 1, 1, yCoordinates - i * 1.5f);
+		RenderTextOnScreen(meshList[GEO_TEXT], ss.str(), Color(1, 1, 0), 2, 1, yCoordinates - i * 1.5f);
 	}
 	std::ostringstream ss2;
 	ss2.str("");

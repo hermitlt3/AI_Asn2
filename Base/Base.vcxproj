@@ -46,6 +46,7 @@
     <ClInclude Include="Source\MeshBuilder.h" />
     <ClInclude Include="Source\MessageBoard.h" />
     <ClInclude Include="Source\Messager.h" />
+    <ClInclude Include="Source\Node.h" />
     <ClInclude Include="Source\Priest.h" />
     <ClInclude Include="Source\Scene.h" />
     <ClInclude Include="Source\SceneAI2.h" />
