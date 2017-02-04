@@ -9,7 +9,7 @@ using std::endl;
 
 Guardian::Guardian() :
 timer(0.0),
-currState(IDLE), Speed(5.0f), Aggrorange(2.f)
+currState(IDLE), Speed(5.0f), Aggrorange(5.f)
 {
 	health = 100;
 	maxhealth = health;
@@ -51,7 +51,10 @@ void Guardian::FSM()
 		case ATTACK:
 		{
 			//This is in OnNotification();
-			
+			if (!InAggroRange())
+			{
+				currState = RETURN;
+			}
 			break;
 		}
 		case RETURN:
@@ -81,7 +84,7 @@ void Guardian::FSM()
 
 void Guardian::Update(double dt)
 {
-	
+	//cout << health << endl;
 	if (_target == nullptr || _Priest == nullptr)
 	{
 		return;
@@ -107,6 +110,12 @@ void Guardian::Update(double dt)
 	{
 		this->vel.SetZero();
 		this->normal = (_target->pos - pos).Normalized();
+		timer += dt;
+		if (timer < 1.f)
+		{
+			_target->health -= (float)Math::RandFloatMinMax(10.f, 15.f);
+			timer = 0;
+		}
 		//cout << "Attacking" << endl;
 		break;
 	}
