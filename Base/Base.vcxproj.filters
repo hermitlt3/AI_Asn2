@@ -146,5 +146,8 @@
     <ClInclude Include="Source\Enemy.h">
       <Filter>ASN2\GameObjects</Filter>
     </ClInclude>
+    <ClInclude Include="Source\Node.h">
+      <Filter>ASN2</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>
