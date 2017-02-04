@@ -60,9 +60,9 @@ void SceneAI2::Init()
 	for (size_t i = 0; i < 5; ++i)
 	{
 		//rdmPos[i] = Vector3(Math::RandFloatMinMax(0.f, 100.f), Math::RandFloatMinMax(0.f, 40.f), 0);
-		rdmPos[i] = Vector3(i * 10, 1 * 10, 0);
+		rdmPos[i] = Vector3(50 + i * 10, 35, 0);
 		hiddenEnemy[i] = new Enemy();
-		hiddenEnemy[i]->SetGO(GameObject::GO_ENEMY, (1, 1, 1), (0, 0, 0), rdmPos[i], false); // TYPE, SCALE, ROTATION, POSITION, ACTIVE
+		hiddenEnemy[i]->SetGO(GameObject::GO_ENEMY, Vector3(5, 5, 5), Vector3(0, 0, 0), rdmPos[i]); // TYPE, SCALE, ROTATION, POSITION, ACTIVE
 		GameObjectManager::GetInstance()->m_goList.push_back(hiddenEnemy[i]);
 	}
 }
