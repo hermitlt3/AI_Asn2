@@ -17,6 +17,7 @@
 #include "Priest.h"
 #include "Guardian.h"
 #include "Enemy.h"
+#include "Grid.h"
 
 using std::ifstream;
 
@@ -57,13 +58,9 @@ void SceneAI2::Init()
 	bossEnemy->SetIsLeader(true);
 	GameObjectManager::GetInstance()->m_goList.push_back(bossEnemy);
 
-	for (size_t i = 0; i < 5; ++i)
-	{
-		//rdmPos[i] = Vector3(Math::RandFloatMinMax(0.f, 100.f), Math::RandFloatMinMax(0.f, 40.f), 0);
-		rdmPos[i] = Vector3(50 + i * 10, 35, 0);
-		hiddenEnemy[i] = new Enemy();
-		hiddenEnemy[i]->SetGO(GameObject::GO_ENEMY, Vector3(5, 5, 5), Vector3(0, 0, 0), rdmPos[i]); // TYPE, SCALE, ROTATION, POSITION, ACTIVE
-		GameObjectManager::GetInstance()->m_goList.push_back(hiddenEnemy[i]);
+	for (int i = 0; i < 20; ++i) {
+		Grid* grid = new Grid(Vector3(m_worldWidth / (20 - i), m_worldHeight / (20 - i), 1), Vector3(m_worldWidth / 20, m_worldHeight / 20), Grid::EMPTY);
+		gridList.push_back(grid);
 	}
 }
 
@@ -193,12 +190,6 @@ void SceneAI2::Update(double dt)
 	bossEnemy->Update(dt);
 	guardian->Update(dt);
 
-	for (int i = 0; i < 5; ++i)
-	{
-		hiddenEnemy[i]->Update(dt);
-	}
-
-
 	UpdateKeys(dt);
 	UpdateMouse(dt);
 	UpdatePhysics(dt);
@@ -273,12 +264,13 @@ void SceneAI2::Render()
 			RenderGO(go);
 		}
 	}
-
-	modelStack.PushMatrix();
-	modelStack.Translate(m_worldWidth / 2, m_worldHeight / 2, -5);
-	modelStack.Scale(177, 100, 1);
-	RenderMesh(meshList[BACKGROUND], false);
-	modelStack.PopMatrix();
+	for (int i = 0; i < gridList.size(); ++i) {
+		modelStack.PushMatrix();
+		modelStack.Translate(gridList[i]->pos.x, gridList[i]->pos.y, gridList[i]->pos.z);
+		modelStack.Scale(gridList[i]->scale.x, gridList[i]->scale.y, gridList[i]->scale.z);
+		RenderMesh(meshList[GRID], false);
+		modelStack.PopMatrix();
+	}
 
 	float yCoordinates = 58.f;
 	std::ostringstream ss;
@@ -288,6 +280,7 @@ void SceneAI2::Render()
 		ss << i << ": Message Board receives \"" << MessageBoard::GetInstance()->GetList()[i] << "\"";
 		RenderTextOnScreen(meshList[GEO_TEXT], ss.str(), Color(1, 1, 0), 2, 1, yCoordinates - i * 1.5f);
 	}
+
 	std::ostringstream ss2;
 	ss2.str("");
 	ss2 << "Priest state: " << priest->GetState();

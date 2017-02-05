@@ -36,6 +36,7 @@
     <ClInclude Include="Source\Enemy.h" />
     <ClInclude Include="Source\GameObject.h" />
     <ClInclude Include="Source\GameObjectManager.h" />
+    <ClInclude Include="Source\Grid.h" />
     <ClInclude Include="Source\Guardian.h" />
     <ClInclude Include="Source\KeyboardController.h" />
     <ClInclude Include="Source\Light.h" />

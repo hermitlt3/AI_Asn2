@@ -46,7 +46,7 @@ void Enemy::Update(double dt)
 
 	}
 	
-	if (health <= 999 && isLeader)
+	if (health <= 20 && isLeader)
 	{
 		if (!isSent) {
 			SendMessage("AMBUSH");

@@ -113,7 +113,8 @@ void SceneBase::Init()
 	meshList[BOSS_ENEMY] = MeshBuilder::GenerateQuad("boss", Color(1, 0, 0), 2.f);
 	meshList[BOSS_ENEMY]->textureID = LoadTGA("Image//Passive.tga");
 
-	meshList[HIDE_ENEMY] = MeshBuilder::GenerateSphere("hidden", Color(1, 0, 1), 36.f, 36.f, 1.f);
+	meshList[GRID] = MeshBuilder::GenerateQuad("grid", Color(1, 0, 1), 1.f);
+	meshList[GRID]->textureID = LoadTGA("Image//Tile.tga");
 
 	meshList[GEO_TEXT] = MeshBuilder::GenerateText("text", 16, 16);
 	meshList[GEO_TEXT]->textureID = LoadTGA("Image//joystix.tga");

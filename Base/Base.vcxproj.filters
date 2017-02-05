@@ -149,5 +149,8 @@
     <ClInclude Include="Source\Node.h">
       <Filter>ASN2</Filter>
     </ClInclude>
+    <ClInclude Include="Source\Grid.h">
+      <Filter>ASN2</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

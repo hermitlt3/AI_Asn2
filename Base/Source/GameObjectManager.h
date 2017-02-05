@@ -22,6 +22,8 @@ bool CheckCollision(GameObject *go, GameObject *other, double dt)
 	switch (other->type)
 	{
 	case GameObject::GO_PLAYER:
+	case GameObject::GO_GUARDIAN:
+	case GameObject::GO_ENEMY:
 	{
 								  float lengthSquared = ((go->pos + go->vel * (float)dt) - (other->pos - other->vel *(float)dt)).LengthSquared();
 								  float combinedRadSq = (go->scale.x + other->scale.x) * (go->scale.x + other->scale.x);
@@ -39,6 +41,8 @@ void CollisionResponse(GameObject *go, GameObject *other, double dt)
 	switch (other->type)
 	{
 	case GameObject::GO_PLAYER:
+	case GameObject::GO_GUARDIAN:
+	case GameObject::GO_ENEMY:
 	{
 								  //Exercise 8b: store values in auditing variables
 								  float m1 = go->mass;

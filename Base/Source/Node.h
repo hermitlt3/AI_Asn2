@@ -1,6 +1,7 @@
 #ifndef NODE_H_
 #define NODE_H_
 
+#include "Vector3.h"
 // Node class for A* pathfinding
 struct Node
 {
