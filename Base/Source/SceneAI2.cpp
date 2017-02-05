@@ -70,15 +70,15 @@ void SceneAI2::Init()
 		for (int j = 0; j < GRID_ROWS; ++j) {
 			Node* node = new Node();
 			if (i == rdm && j == 0) {
-				node->grid = new Grid(Vector3((float)((GRID_SIZE >> 1) + GRID_SIZE * i), (float)(m_worldHeight - (GRID_SIZE >> 1) - GRID_SIZE * j), 0), Vector3(GRID_SIZE, GRID_SIZE, 1), Grid::START);
+				node->grid = new Grid(Vector3((float)((GRID_SIZE >> 1) + GRID_SIZE * i), (float)(/*m_worldHeight - */(GRID_SIZE >> 1) + GRID_SIZE * j), 0), Vector3(GRID_SIZE, GRID_SIZE, 1), Grid::START);
 				start = node;
 			}
 			else if (i == GRID_COLS - 1 && j == ((GRID_ROWS + 1) >> 1)) {
-				node->grid = new Grid(Vector3((float)((GRID_SIZE >> 1) + GRID_SIZE * i), (float)(m_worldHeight - (GRID_SIZE >> 1) - GRID_SIZE * j), 0), Vector3(GRID_SIZE, GRID_SIZE, 1), Grid::END);
+				node->grid = new Grid(Vector3((float)((GRID_SIZE >> 1) + GRID_SIZE * i), (float)(/*m_worldHeight - */(GRID_SIZE >> 1) + GRID_SIZE * j), 0), Vector3(GRID_SIZE, GRID_SIZE, 1), Grid::END);
 				goal = node;
 			}
 			else 					
-				node->grid = new Grid(Vector3((float)((GRID_SIZE >> 1) + GRID_SIZE * i), (float)(m_worldHeight - (GRID_SIZE >> 1) - GRID_SIZE * j), 0), Vector3(GRID_SIZE, GRID_SIZE, 1), static_cast<Grid::GRID_TYPE>(0));
+				node->grid = new Grid(Vector3((float)((GRID_SIZE >> 1) + GRID_SIZE * i), (float)(/*m_worldHeight - */(GRID_SIZE >> 1) + GRID_SIZE * j), 0), Vector3(GRID_SIZE, GRID_SIZE, 1), static_cast<Grid::GRID_TYPE>(0));
 			
 			nodemanager->Init(i, j, node);
 		}
@@ -309,6 +309,7 @@ void SceneAI2::Render()
 		std::ostringstream op;
 		op.str("");
 		op << nodemanager->theNode[j][i]->F;
+		modelStack.Scale(0.5f, 0.5f, 1);
 		RenderText(meshList[GEO_TEXT],op.str(), Color(0, 0.4f, 0.4f), 0.4f);
 		modelStack.PopMatrix();
 		}

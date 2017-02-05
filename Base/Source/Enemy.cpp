@@ -55,6 +55,7 @@ void Enemy::Update(double dt)
 	}
 	if (health <= 0)
 	{
+		currState = DIE;
 		for (vector<GameObject*>::iterator it = GameObjectManager::GetInstance()->m_goList.begin(); it != GameObjectManager::GetInstance()->m_goList.end();) {
 			if (*it == this) {
 				it = GameObjectManager::GetInstance()->m_goList.erase(it);
