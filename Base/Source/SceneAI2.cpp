@@ -76,9 +76,13 @@ void SceneAI2::Init()
 				node->grid = new Grid(Vector3((float)((GRID_SIZE >> 1) + GRID_SIZE * i), (float)((GRID_SIZE >> 1) + GRID_SIZE * j), 0), Vector3(GRID_SIZE, GRID_SIZE, 1), Grid::END);
 				goal = node;
 			}
-			else 					
-				node->grid = new Grid(Vector3((float)((GRID_SIZE >> 1) + GRID_SIZE * i), (float)((GRID_SIZE >> 1) + GRID_SIZE * j), 0), Vector3(GRID_SIZE, GRID_SIZE, 1), Grid::EMPTY);
-			
+			else {
+				int rdm2 = Math::RandIntMinMax(0, 10);
+				if (rdm2 < 9)
+					node->grid = new Grid(Vector3((float)((GRID_SIZE >> 1) + GRID_SIZE * i), (float)((GRID_SIZE >> 1) + GRID_SIZE * j), 0), Vector3(GRID_SIZE, GRID_SIZE, 1), Grid::EMPTY);
+				else
+					node->grid = new Grid(Vector3((float)((GRID_SIZE >> 1) + GRID_SIZE * i), (float)((GRID_SIZE >> 1) + GRID_SIZE * j), 0), Vector3(GRID_SIZE, GRID_SIZE, 1), Grid::WALL);
+			}
 			nodemanager->Init(i, j, node);
 		}
 	}
@@ -296,14 +300,21 @@ void SceneAI2::Render()
 		modelStack.Translate(nodemanager->theNode[j][i]->grid->pos.x, nodemanager->theNode[j][i]->grid->pos.y, nodemanager->theNode[j][i]->grid->pos.z);
 		modelStack.Scale(nodemanager->theNode[j][i]->grid->scale.x, nodemanager->theNode[j][i]->grid->scale.y, nodemanager->theNode[j][i]->grid->scale.z);
 
-		if (nodemanager->theNode[j][i]->grid->type == Grid::EMPTY)
+		/*if (nodemanager->theNode[j][i]->parent)
+			RenderMesh(meshList[GRID_PATH], false);
+		else if (nodemanager->theNode[j][i]->grid->type == Grid::EMPTY)
+			RenderMesh(meshList[GRID_EMPTY], false);*/
+		if (nodemanager->theNode[j][i]->grid->type == Grid::START)
+			RenderMesh(meshList[GRID_START], false);
+		else if (nodemanager->theNode[j][i]->grid->type == Grid::END)
+			RenderMesh(meshList[GRID_END], false);
+		else if (nodemanager->theNode[j][i]->parent)
+			RenderMesh(meshList[GRID_PATH], false);
+		else if (nodemanager->theNode[j][i]->visited)
 			RenderMesh(meshList[GRID_EMPTY], false);
 		else if (nodemanager->theNode[j][i]->grid->type == Grid::WALL)
 			RenderMesh(meshList[GRID_WALL], false);
-		else if (nodemanager->theNode[j][i]->grid->type == Grid::END)
-			RenderMesh(meshList[GRID_END], false);
-		else if (nodemanager->theNode[j][i]->grid->type == Grid::START)
-			RenderMesh(meshList[GRID_START], false);
+		
 
 		std::ostringstream op;
 		op.str("");

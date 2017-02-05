@@ -42,12 +42,12 @@ public:
 				results.push_back(theNode[widthIndex + 1][heightIndex]);
 		}
 		if (heightIndex > 0) {
-			if (theNode[widthIndex - 1][heightIndex - 1]->grid->type != Grid::WALL)
+			if (theNode[widthIndex ][heightIndex - 1]->grid->type != Grid::WALL)
 				results.push_back(theNode[widthIndex][heightIndex - 1]);
 		}
 		if (heightIndex < GRID_ROWS - 1) {
-			if (theNode[widthIndex - 1][heightIndex + 1]->grid->type != Grid::WALL)
-			results.push_back(theNode[widthIndex][heightIndex + 1]);
+			if (theNode[widthIndex][heightIndex + 1]->grid->type != Grid::WALL)
+				results.push_back(theNode[widthIndex][heightIndex + 1]);
 		}
 
 		return results;
