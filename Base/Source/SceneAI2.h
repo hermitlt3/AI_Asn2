@@ -9,7 +9,8 @@ using std::string;
 class Priest;
 class Guardian;
 class Enemy;
-class Grid;
+struct Node;
+class NodeManager;
 class SceneAI2 : public SceneBase
 {
 
@@ -45,7 +46,8 @@ protected:
 	Guardian* guardian;
 	Enemy* bossEnemy;
 	Vector3 rdmPos[5];
-	std::vector<Grid*> gridList;
+
+	NodeManager* nodemanager;
 };
 
 

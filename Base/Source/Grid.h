@@ -1,11 +1,17 @@
 #pragma once
 
 #include "Vector3.h"
+#include "list"
+
+using std::list;
+
 struct Grid {
 	enum GRID_TYPE
 	{
 		EMPTY = 0,
-		OBSTACLE,
+		WALL,
+		END,
+		START,
 
 		TOTAL_GRID_TYPES
 	};
@@ -28,3 +34,6 @@ struct Grid {
 	Vector3 scale;
 	GRID_TYPE type;
 };
+
+
+

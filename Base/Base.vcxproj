@@ -32,11 +32,13 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Source\Application.h" />
+    <ClInclude Include="Source\AStarAlgorithm.h" />
     <ClInclude Include="Source\Camera.h" />
     <ClInclude Include="Source\Enemy.h" />
     <ClInclude Include="Source\GameObject.h" />
     <ClInclude Include="Source\GameObjectManager.h" />
     <ClInclude Include="Source\Grid.h" />
+    <ClInclude Include="Source\NodeManager.h" />
     <ClInclude Include="Source\Guardian.h" />
     <ClInclude Include="Source\KeyboardController.h" />
     <ClInclude Include="Source\Light.h" />

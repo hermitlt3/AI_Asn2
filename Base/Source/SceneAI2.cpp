@@ -18,6 +18,9 @@
 #include "Guardian.h"
 #include "Enemy.h"
 #include "Grid.h"
+#include "NodeManager.h"
+#include "Node.h"
+#include "AStarAlgorithm.h"
 
 using std::ifstream;
 
@@ -38,6 +41,7 @@ void SceneAI2::Init()
 	m_worldWidth = m_worldHeight * (float)Application::GetWindowWidth() / Application::GetWindowHeight();
 
 	m_objectCount = 0;
+	nodemanager = NodeManager::GetInstance();
 
 	priest = new Priest();
 	priest->SetGO(GameObject::GO_PRIEST, Vector3(5, 5, 5), Vector3(0, 0, 0), Vector3(100, 50, 0)); // TYPE, SCALE, ROTATION, POSITION
@@ -58,10 +62,32 @@ void SceneAI2::Init()
 	bossEnemy->SetIsLeader(true);
 	GameObjectManager::GetInstance()->m_goList.push_back(bossEnemy);
 
-	for (int i = 0; i < 20; ++i) {
-		Grid* grid = new Grid(Vector3(m_worldWidth / (20 - i), m_worldHeight / (20 - i), 1), Vector3(m_worldWidth / 20, m_worldHeight / 20), Grid::EMPTY);
-		gridList.push_back(grid);
+	int rdm = Math::RandIntMinMax(0, GRID_COLS - 1);
+
+
+	Node *start; Node *goal;
+	for (int i = 0; i < GRID_COLS; ++i) {
+		for (int j = 0; j < GRID_ROWS; ++j) {
+			Node* node = new Node();
+			if (i == rdm && j == 0) {
+				node->grid = new Grid(Vector3((float)((GRID_SIZE >> 1) + GRID_SIZE * i), (float)(m_worldHeight - (GRID_SIZE >> 1) - GRID_SIZE * j), 0), Vector3(GRID_SIZE, GRID_SIZE, 1), Grid::START);
+				start = node;
+			}
+			else if (i == GRID_COLS - 1 && j == ((GRID_ROWS + 1) >> 1)) {
+				node->grid = new Grid(Vector3((float)((GRID_SIZE >> 1) + GRID_SIZE * i), (float)(m_worldHeight - (GRID_SIZE >> 1) - GRID_SIZE * j), 0), Vector3(GRID_SIZE, GRID_SIZE, 1), Grid::END);
+				goal = node;
+			}
+			else 					
+				node->grid = new Grid(Vector3((float)((GRID_SIZE >> 1) + GRID_SIZE * i), (float)(m_worldHeight - (GRID_SIZE >> 1) - GRID_SIZE * j), 0), Vector3(GRID_SIZE, GRID_SIZE, 1), static_cast<Grid::GRID_TYPE>(0));
+			
+			nodemanager->Init(i, j, node);
+		}
 	}
+	if (start && goal) {
+		NodeManager::GetInstance()->CalculateFGHCost(start, goal);
+	}
+
+	AStarAlgorithm(start, goal);
 }
 
 
@@ -264,12 +290,28 @@ void SceneAI2::Render()
 			RenderGO(go);
 		}
 	}
-	for (int i = 0; i < gridList.size(); ++i) {
+	for (size_t i = 0; i < GRID_ROWS; ++i) {
+		for (size_t j = 0; j < GRID_COLS; ++j) {
+
 		modelStack.PushMatrix();
-		modelStack.Translate(gridList[i]->pos.x, gridList[i]->pos.y, gridList[i]->pos.z);
-		modelStack.Scale(gridList[i]->scale.x, gridList[i]->scale.y, gridList[i]->scale.z);
-		RenderMesh(meshList[GRID], false);
+		modelStack.Translate(nodemanager->theNode[j][i]->grid->pos.x, nodemanager->theNode[j][i]->grid->pos.y, nodemanager->theNode[j][i]->grid->pos.z);
+		modelStack.Scale(nodemanager->theNode[j][i]->grid->scale.x, nodemanager->theNode[j][i]->grid->scale.y, nodemanager->theNode[j][i]->grid->scale.z);
+
+		if (nodemanager->theNode[j][i]->grid->type == Grid::EMPTY && !nodemanager->theNode[j][i]->parent)
+			RenderMesh(meshList[GRID_EMPTY], false);
+		else if (nodemanager->theNode[j][i]->parent)
+			RenderMesh(meshList[GRID_WALL], false);
+		else if (nodemanager->theNode[j][i]->grid->type == Grid::END)
+			RenderMesh(meshList[GRID_END], false);
+		else if (nodemanager->theNode[j][i]->grid->type == Grid::START)
+			RenderMesh(meshList[GRID_START], false);
+
+		std::ostringstream op;
+		op.str("");
+		op << nodemanager->theNode[j][i]->F;
+		RenderText(meshList[GEO_TEXT],op.str(), Color(0, 0.4f, 0.4f), 0.4f);
 		modelStack.PopMatrix();
+		}
 	}
 
 	float yCoordinates = 58.f;

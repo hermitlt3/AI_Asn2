@@ -152,5 +152,11 @@
     <ClInclude Include="Source\Grid.h">
       <Filter>ASN2</Filter>
     </ClInclude>
+    <ClInclude Include="Source\NodeManager.h">
+      <Filter>ASN2</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\AStarAlgorithm.h">
+      <Filter>ASN2</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>
