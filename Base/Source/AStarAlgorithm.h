@@ -42,8 +42,8 @@ static void AStarAlgorithm(Node* start, Node* goal)
 	while (!openList.empty())
 	{
 		Node* current = openList.top();
-		Vector3 abc = current->grid->pos;
-		if (current == goal || i > 20)
+
+		if (current == goal || i > 8)
 			break;
 		
 		list<Node*>tempList = NodeManager::GetInstance()->returnNeighbours(current);

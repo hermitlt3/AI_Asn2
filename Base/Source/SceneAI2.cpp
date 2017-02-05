@@ -73,7 +73,7 @@ void SceneAI2::Init()
 				node->grid = new Grid(Vector3((float)((GRID_SIZE >> 1) + GRID_SIZE * i), (float)(/*m_worldHeight - */(GRID_SIZE >> 1) + GRID_SIZE * j), 0), Vector3(GRID_SIZE, GRID_SIZE, 1), Grid::START);
 				start = node;
 			}
-			else if (i == GRID_COLS - 1 && j == ((GRID_ROWS + 1) >> 1)) {
+			else if (i == GRID_COLS - 1 && j == ((GRID_ROWS + 1) >> 2)) {
 				node->grid = new Grid(Vector3((float)((GRID_SIZE >> 1) + GRID_SIZE * i), (float)(/*m_worldHeight - */(GRID_SIZE >> 1) + GRID_SIZE * j), 0), Vector3(GRID_SIZE, GRID_SIZE, 1), Grid::END);
 				goal = node;
 			}
