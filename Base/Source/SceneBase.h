@@ -55,6 +55,7 @@ public:
 		GRID_EMPTY,
 		GRID_START,
 		GRID_END,
+		GRID_PATH,
 
 		BACKGROUND,
 

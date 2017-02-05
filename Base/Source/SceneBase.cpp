@@ -115,9 +115,11 @@ void SceneBase::Init()
 
 	meshList[GRID_EMPTY] = MeshBuilder::GenerateQuad("grid", Color(1, 0, 1), 1.f);
 	meshList[GRID_EMPTY]->textureID = LoadTGA("Image//Tile.tga");
+
 	meshList[GRID_WALL] = MeshBuilder::GenerateQuad("gridwall", Color(1, 1, 1), 1.f);
 	meshList[GRID_END] = MeshBuilder::GenerateQuad("gridend", Color(1, 0, 0), 1.f);
 	meshList[GRID_START] = MeshBuilder::GenerateQuad("gridstart", Color(0, 1, 0), 1.f);
+	meshList[GRID_PATH] = MeshBuilder::GenerateQuad("gridstart", Color(0, 0, 1), 1.f);
 
 	meshList[GEO_TEXT] = MeshBuilder::GenerateText("text", 16, 16);
 	meshList[GEO_TEXT]->textureID = LoadTGA("Image//joystix.tga");

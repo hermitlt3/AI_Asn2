@@ -33,14 +33,22 @@ public:
 		list<Node*> results;
 
 		// LEFT NEIGHBOUR
-		if (widthIndex > 0)
-			results.push_back(theNode[widthIndex - 1][heightIndex]);
-		if (widthIndex < GRID_COLS - 1)
-			results.push_back(theNode[widthIndex + 1][heightIndex]);
-		if (heightIndex > 0)
-			results.push_back(theNode[widthIndex][heightIndex - 1]);
-		if (heightIndex < GRID_COLS - 1)
+		if (widthIndex > 0) {
+			if (theNode[widthIndex - 1][heightIndex]->grid->type != Grid::WALL)
+				results.push_back(theNode[widthIndex - 1][heightIndex]);
+		}
+		if (widthIndex < GRID_COLS - 1) {
+			if (theNode[widthIndex + 1][heightIndex]->grid->type != Grid::WALL)
+				results.push_back(theNode[widthIndex + 1][heightIndex]);
+		}
+		if (heightIndex > 0) {
+			if (theNode[widthIndex - 1][heightIndex - 1]->grid->type != Grid::WALL)
+				results.push_back(theNode[widthIndex][heightIndex - 1]);
+		}
+		if (heightIndex < GRID_ROWS - 1) {
+			if (theNode[widthIndex - 1][heightIndex + 1]->grid->type != Grid::WALL)
 			results.push_back(theNode[widthIndex][heightIndex + 1]);
+		}
 
 		return results;
 	};

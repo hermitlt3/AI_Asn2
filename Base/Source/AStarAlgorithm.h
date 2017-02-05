@@ -16,20 +16,11 @@ struct LessFcost {
 	}
 };
 
-//struct SameNode {
-//	SameNode(Node* node) : toCompare(node) {}
-//	bool operator()(const Node& lhs)
-//	{
-//		return lhs.ID == toCompare->ID;
-//	}
-//	Node* toCompare;
-//};
 
 static void AStarAlgorithm(Node* start, Node* goal) 
 {
 	// The set of currently discovered nodes that are already evaluated
 	priority_queue<Node*, std::vector<Node*>, LessFcost>openList;
-	//priority_queue<Node*>openList;
 	// Only start node is known
 	openList.push(start);
 
@@ -38,13 +29,16 @@ static void AStarAlgorithm(Node* start, Node* goal)
 	map<Node*, Node*> came_from;
 	cost_so_far[start] = 0;
 	came_from[start] = nullptr;
-	int i = 0;
+	
+	Node* current;
+
 	while (!openList.empty())
 	{
-		Node* current = openList.top();
+		current = openList.top();
 
-		if (current == goal || i > 8)
+		if (current == goal){
 			break;
+		}
 		
 		list<Node*>tempList = NodeManager::GetInstance()->returnNeighbours(current);
 
@@ -54,23 +48,23 @@ static void AStarAlgorithm(Node* start, Node* goal)
 			int new_cost = cost_so_far[current] + NodeManager::GetInstance()->returnGcost(current, next);
 			// If node is an obstacle
 			if (next->grid->type != Grid::EMPTY) {
-				continue;
+				//continue;
 			}
 			// Ignore neighbour
-			next->parent = new Node();
 
 			// If node is calculated
 			if (cost_so_far.find(next) == cost_so_far.end() || new_cost < cost_so_far[next]) {
 				cost_so_far[next] = new_cost;
 
-				//next->parent = new Node();
 				//next->F = new_cost + heuristic(goal->grid->pos, next->grid->pos);
 				std::make_heap(const_cast<Node**>(&openList.top()), const_cast<Node**>(&openList.top()) + openList.size(), LessFcost());
 
 				openList.push(next);
 				came_from[next] = current;
 			}
-			i++;
 		}
 	}
+	/*while (current != start) {
+
+	}*/
 }

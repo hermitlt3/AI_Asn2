@@ -64,21 +64,20 @@ void SceneAI2::Init()
 
 	int rdm = Math::RandIntMinMax(0, GRID_COLS - 1);
 
-
 	Node *start; Node *goal;
 	for (int i = 0; i < GRID_COLS; ++i) {
 		for (int j = 0; j < GRID_ROWS; ++j) {
 			Node* node = new Node();
 			if (i == rdm && j == 0) {
-				node->grid = new Grid(Vector3((float)((GRID_SIZE >> 1) + GRID_SIZE * i), (float)(/*m_worldHeight - */(GRID_SIZE >> 1) + GRID_SIZE * j), 0), Vector3(GRID_SIZE, GRID_SIZE, 1), Grid::START);
+				node->grid = new Grid(Vector3((float)((GRID_SIZE >> 1) + GRID_SIZE * i), (float)((GRID_SIZE >> 1) + GRID_SIZE * j), 0), Vector3(GRID_SIZE, GRID_SIZE, 1), Grid::START);
 				start = node;
 			}
-			else if (i == GRID_COLS - 1 && j == ((GRID_ROWS + 1) >> 2)) {
-				node->grid = new Grid(Vector3((float)((GRID_SIZE >> 1) + GRID_SIZE * i), (float)(/*m_worldHeight - */(GRID_SIZE >> 1) + GRID_SIZE * j), 0), Vector3(GRID_SIZE, GRID_SIZE, 1), Grid::END);
+			else if (i == GRID_COLS - 1 && j == ((GRID_ROWS + 1) >> 1)) {
+				node->grid = new Grid(Vector3((float)((GRID_SIZE >> 1) + GRID_SIZE * i), (float)((GRID_SIZE >> 1) + GRID_SIZE * j), 0), Vector3(GRID_SIZE, GRID_SIZE, 1), Grid::END);
 				goal = node;
 			}
 			else 					
-				node->grid = new Grid(Vector3((float)((GRID_SIZE >> 1) + GRID_SIZE * i), (float)(/*m_worldHeight - */(GRID_SIZE >> 1) + GRID_SIZE * j), 0), Vector3(GRID_SIZE, GRID_SIZE, 1), static_cast<Grid::GRID_TYPE>(0));
+				node->grid = new Grid(Vector3((float)((GRID_SIZE >> 1) + GRID_SIZE * i), (float)((GRID_SIZE >> 1) + GRID_SIZE * j), 0), Vector3(GRID_SIZE, GRID_SIZE, 1), Grid::EMPTY);
 			
 			nodemanager->Init(i, j, node);
 		}
@@ -297,9 +296,9 @@ void SceneAI2::Render()
 		modelStack.Translate(nodemanager->theNode[j][i]->grid->pos.x, nodemanager->theNode[j][i]->grid->pos.y, nodemanager->theNode[j][i]->grid->pos.z);
 		modelStack.Scale(nodemanager->theNode[j][i]->grid->scale.x, nodemanager->theNode[j][i]->grid->scale.y, nodemanager->theNode[j][i]->grid->scale.z);
 
-		if (nodemanager->theNode[j][i]->grid->type == Grid::EMPTY && !nodemanager->theNode[j][i]->parent)
+		if (nodemanager->theNode[j][i]->grid->type == Grid::EMPTY)
 			RenderMesh(meshList[GRID_EMPTY], false);
-		else if (nodemanager->theNode[j][i]->parent)
+		else if (nodemanager->theNode[j][i]->grid->type == Grid::WALL)
 			RenderMesh(meshList[GRID_WALL], false);
 		else if (nodemanager->theNode[j][i]->grid->type == Grid::END)
 			RenderMesh(meshList[GRID_END], false);
