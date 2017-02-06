@@ -85,7 +85,7 @@ static void AStarAlgorithm(Node* start, Node* goal)
 	{
 		current = *(openList.begin());
 
-		if (current == goal || i > 200){
+		if (current == goal || i > 20){
 			break;
 		}
 		i++;
@@ -95,12 +95,13 @@ static void AStarAlgorithm(Node* start, Node* goal)
 		list<Node*>tempList = NodeManager::GetInstance()->returnNeighbours(current);
 		for (std::list<Node*>::iterator it = tempList.begin(); it != tempList.end(); ++it) {
 			Node* next = (*it);
-			std::cout << next->grid->pos << std::endl;
-			next->visited = true;
 		
-			if (openList.find(next) != openList.end()) {
+			if (closeList.find(next) != closeList.end()) {
 				continue;
 			}
+			next->visited = true;
+			std::cout << next->grid->pos << std::endl;
+
 			int tentative_gScore = gScore[current] + heuristic(current->grid->pos, next->grid->pos);
 			if (openList.find(next) == openList.end()) {
 				openList.insert(next);
@@ -112,5 +113,10 @@ static void AStarAlgorithm(Node* start, Node* goal)
 			gScore[next] = tentative_gScore;
 			fScore[next] = gScore[next] + heuristic(next->grid->pos, goal->grid->pos);
 		}
+	}
+	while (current != start)
+	{
+		current->parent = new Node();
+		current = came_from[current];
 	}
 }

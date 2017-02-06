@@ -295,10 +295,6 @@ void SceneAI2::Render()
 		modelStack.Translate(nodemanager->theNode[j][i]->grid->pos.x, nodemanager->theNode[j][i]->grid->pos.y, nodemanager->theNode[j][i]->grid->pos.z);
 		modelStack.Scale(nodemanager->theNode[j][i]->grid->scale.x, nodemanager->theNode[j][i]->grid->scale.y, nodemanager->theNode[j][i]->grid->scale.z);
 
-		/*if (nodemanager->theNode[j][i]->parent)
-			RenderMesh(meshList[GRID_PATH], false);
-		else if (nodemanager->theNode[j][i]->grid->type == Grid::EMPTY)
-			RenderMesh(meshList[GRID_EMPTY], false);*/
 		if (nodemanager->theNode[j][i]->grid->type == Grid::START)
 			RenderMesh(meshList[GRID_START], false);
 		else if (nodemanager->theNode[j][i]->grid->type == Grid::END)
@@ -309,14 +305,34 @@ void SceneAI2::Render()
 			RenderMesh(meshList[GRID_WALL], false);
 		else if (nodemanager->theNode[j][i]->visited)
 			RenderMesh(meshList[GRID_EMPTY], false);
+		modelStack.PopMatrix();
 
-		
-
+		modelStack.PushMatrix();
 		std::ostringstream op;
 		op.str("");
-		op << nodemanager->theNode[j][i]->F;
-		modelStack.Scale(0.5f, 0.5f, 1);
-		RenderText(meshList[GEO_TEXT],op.str(), Color(0, 0.4f, 0.4f), 0.4f);
+		op << "F:" << nodemanager->theNode[j][i]->F;
+		modelStack.Translate(nodemanager->theNode[j][i]->grid->pos.x - 3, nodemanager->theNode[j][i]->grid->pos.y + 4, nodemanager->theNode[j][i]->grid->pos.z );
+		modelStack.Scale(nodemanager->theNode[j][i]->grid->scale.x, nodemanager->theNode[j][i]->grid->scale.y, nodemanager->theNode[j][i]->grid->scale.z);
+		modelStack.Scale(0.3f, 0.3f, 1);
+		RenderText(meshList[GEO_TEXT], op.str(), Color(0, 1, 1), 0.5f);
+		modelStack.PopMatrix();
+
+		modelStack.PushMatrix();
+		op.str("");
+		op << "G:" << nodemanager->theNode[j][i]->G;
+		modelStack.Translate(nodemanager->theNode[j][i]->grid->pos.x - 3, nodemanager->theNode[j][i]->grid->pos.y + 2, nodemanager->theNode[j][i]->grid->pos.z);
+		modelStack.Scale(nodemanager->theNode[j][i]->grid->scale.x, nodemanager->theNode[j][i]->grid->scale.y, nodemanager->theNode[j][i]->grid->scale.z);
+		modelStack.Scale(0.3f, 0.3f, 1);
+		RenderText(meshList[GEO_TEXT], op.str(), Color(1, 1, 0), 0.5f);
+		modelStack.PopMatrix();
+
+		modelStack.PushMatrix();
+		op.str("");
+		op << "H:" << nodemanager->theNode[j][i]->H;
+		modelStack.Translate(nodemanager->theNode[j][i]->grid->pos.x - 3, nodemanager->theNode[j][i]->grid->pos.y , nodemanager->theNode[j][i]->grid->pos.z);
+		modelStack.Scale(nodemanager->theNode[j][i]->grid->scale.x, nodemanager->theNode[j][i]->grid->scale.y, nodemanager->theNode[j][i]->grid->scale.z);
+		modelStack.Scale(0.3f, 0.3f, 1);
+		RenderText(meshList[GEO_TEXT], op.str(), Color(1, 0, 1), 0.5f);
 		modelStack.PopMatrix();
 		}
 	}
@@ -333,7 +349,7 @@ void SceneAI2::Render()
 	{
 		ss.str("");
 		ss << i << ": Message Board receives \"" << MessageBoard::GetInstance()->GetList()[i] << "\"";
-		RenderTextOnScreen(meshList[GEO_TEXT], ss.str(), Color(1, 1, 0), 2, 1, yCoordinates - i * 1.5f);
+		RenderTextOnScreen(meshList[GEO_TEXT], ss.str(), Color(1, 1, 0), 1.6f, 20, yCoordinates - i * 1.5f);
 	}
 	//
 	// 

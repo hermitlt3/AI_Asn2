@@ -119,10 +119,10 @@ void SceneBase::Init()
 	meshList[MANA_AREA] = MeshBuilder::GenerateQuad("mana", Color(1, 0, 1), 1.f);
 	meshList[MANA_AREA]->textureID = LoadTGA("Image//Manafountain.tga");
 
-	meshList[GRID_WALL] = MeshBuilder::GenerateQuad("gridwall", Color(1, 1, 1), 1.f);
-	meshList[GRID_END] = MeshBuilder::GenerateQuad("gridend", Color(1, 0, 0), 1.f);
-	meshList[GRID_START] = MeshBuilder::GenerateQuad("gridstart", Color(0, 1, 0), 1.f);
-	meshList[GRID_PATH] = MeshBuilder::GenerateQuad("gridstart", Color(0, 0, 1), 1.f);
+	meshList[GRID_WALL] = MeshBuilder::GenerateQuad("gridwall", Color(0.5f, 0.5f, 0.5f), 1.f);
+	meshList[GRID_END] = MeshBuilder::GenerateQuad("gridend", Color(0.6f, 0, 0), 1.f);
+	meshList[GRID_START] = MeshBuilder::GenerateQuad("gridstart", Color(0, 0.6f, 0), 1.f);
+	meshList[GRID_PATH] = MeshBuilder::GenerateQuad("gridstart", Color(0, 0, 0.6f), 1.f);
 
 	meshList[GEO_TEXT] = MeshBuilder::GenerateText("text", 16, 16);
 	meshList[GEO_TEXT]->textureID = LoadTGA("Image//joystix.tga");
