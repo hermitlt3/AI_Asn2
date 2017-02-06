@@ -13,6 +13,7 @@ struct GameObject
 		GO_PRIEST,
 		GO_GUARDIAN,
 		GO_ENEMY,
+		GO_NPC,
 
 		GO_TOTAL, //must be last
 	};

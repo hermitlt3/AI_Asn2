@@ -72,19 +72,19 @@ void SceneAI2::Init()
 		for (int j = 0; j < GRID_ROWS; ++j) {
 			Node* node = new Node();
 			if (i == rdm && j == 0) {
-				node->grid = new Grid(Vector3((float)((GRID_SIZE >> 1) + GRID_SIZE * i), (float)((GRID_SIZE >> 1) + GRID_SIZE * j), 0), Vector3(GRID_SIZE, GRID_SIZE, 1), Grid::START);
+				node->grid = new Grid(Vector3((float)((GRID_SIZE >> 1) + GRID_SIZE * i), (float)((GRID_SIZE >> 1) + GRID_SIZE * j), 0), Vector3(GRID_SIZE, GRID_SIZE, -1), Grid::START);
 				start = node;
 			}
 			else if (i == GRID_COLS - 1 && j == ((GRID_ROWS + 1) >> 1)) {
-				node->grid = new Grid(Vector3((float)((GRID_SIZE >> 1) + GRID_SIZE * i), (float)((GRID_SIZE >> 1) + GRID_SIZE * j), 0), Vector3(GRID_SIZE, GRID_SIZE, 1), Grid::END);
+				node->grid = new Grid(Vector3((float)((GRID_SIZE >> 1) + GRID_SIZE * i), (float)((GRID_SIZE >> 1) + GRID_SIZE * j), 0), Vector3(GRID_SIZE, GRID_SIZE, -1), Grid::END);
 				goal = node;
 			}
 			else {
 				int rdm2 = Math::RandIntMinMax(0, 10);
 				if (rdm2 < 8)
-					node->grid = new Grid(Vector3((float)((GRID_SIZE >> 1) + GRID_SIZE * i), (float)((GRID_SIZE >> 1) + GRID_SIZE * j), 0), Vector3(GRID_SIZE, GRID_SIZE, 1), Grid::EMPTY);
+					node->grid = new Grid(Vector3((float)((GRID_SIZE >> 1) + GRID_SIZE * i), (float)((GRID_SIZE >> 1) + GRID_SIZE * j), 0), Vector3(GRID_SIZE, GRID_SIZE, -1), Grid::EMPTY);
 				else
-					node->grid = new Grid(Vector3((float)((GRID_SIZE >> 1) + GRID_SIZE * i), (float)((GRID_SIZE >> 1) + GRID_SIZE * j), 0), Vector3(GRID_SIZE, GRID_SIZE, 1), Grid::WALL);
+					node->grid = new Grid(Vector3((float)((GRID_SIZE >> 1) + GRID_SIZE * i), (float)((GRID_SIZE >> 1) + GRID_SIZE * j), 0), Vector3(GRID_SIZE, GRID_SIZE, -1), Grid::WALL);
 			}
 			nodemanager->Init(i, j, node);
 		}
@@ -93,7 +93,13 @@ void SceneAI2::Init()
 		NodeManager::GetInstance()->CalculateFGHCost(start, goal);
 	}
 
-	AStarAlgorithm(start, goal);
+	waypoints = AStarAlgorithm(start, goal);
+	npc = new GameObject();
+	if (waypoints.size() > 0)
+		AIIndex = waypoints.size() - 1;
+	reverse = false;
+	npc->SetGO(GameObject::GO_NPC, Vector3(5, 5, 5), Vector3(0, 0, 0), Vector3(waypoints[AIIndex].x, waypoints[AIIndex].y, 1));
+	GameObjectManager::GetInstance()->m_goList.push_back(npc);
 }
 
 
@@ -221,6 +227,33 @@ void SceneAI2::Update(double dt)
 	priest->FSM();
 	guardian->FSM();
 	bossEnemy->FSM();
+
+	if (!waypoints.empty()){
+
+		if ((npc->pos.x > waypoints[AIIndex].x - 0.2f && npc->pos.x < waypoints[AIIndex].x + 0.2f) &&
+			(npc->pos.y > waypoints[AIIndex].y - 0.2f && npc->pos.y < waypoints[AIIndex].y + 0.2f))
+		{
+			npc->pos = waypoints[AIIndex];
+			if (!reverse) {
+				if (AIIndex > 0) {
+					AIIndex--;
+				}
+				else
+					reverse = true;
+			}
+			else {
+				if (AIIndex < waypoints.size() - 1)
+					AIIndex++;
+				else
+					reverse = false;
+			}
+		}
+		Vector3 direction;
+		Vector3 temp;
+		temp.Set(waypoints[AIIndex].x, waypoints[AIIndex].y, 1);
+		direction = (temp - npc->pos).Normalized();
+		npc->pos += direction * 5 *  dt;
+	}
 }
 
 void SceneAI2::RenderGO(GameObject *go)
@@ -254,6 +287,15 @@ void SceneAI2::RenderGO(GameObject *go)
 								  modelStack.PopMatrix();
 								  break;
 	}
+	case GameObject::GO_NPC:
+	{
+								 modelStack.PushMatrix();
+								 modelStack.Translate(go->pos.x, go->pos.y, go->pos.z);
+								 modelStack.Scale(go->scale.x, go->scale.y, go->scale.z);
+								 RenderMesh(meshList[NPC], false);
+								 modelStack.PopMatrix();
+								 break;
+	}
 	}
 }
 
@@ -280,14 +322,7 @@ void SceneAI2::Render()
 	// Model matrix : an identity matrix (model will be at the origin)
 	modelStack.LoadIdentity();
 
-	for (std::vector<GameObject *>::iterator it = GameObjectManager::GetInstance()->m_goList.begin(); it != GameObjectManager::GetInstance()->m_goList.end(); ++it)
-	{
-		GameObject *go = (GameObject *)*it;
-		if (go->active)
-		{
-			RenderGO(go);
-		}
-	}
+	
 	for (size_t i = 0; i < GRID_ROWS; ++i) {
 		for (size_t j = 0; j < GRID_COLS; ++j) {
 
@@ -304,7 +339,10 @@ void SceneAI2::Render()
 		else if (nodemanager->theNode[j][i]->grid->type == Grid::WALL)
 			RenderMesh(meshList[GRID_WALL], false);
 		else if (nodemanager->theNode[j][i]->visited)
+			RenderMesh(meshList[GRID_VISITED], false);
+		else if(nodemanager->theNode[j][i]->grid->type == Grid::EMPTY)
 			RenderMesh(meshList[GRID_EMPTY], false);
+
 		modelStack.PopMatrix();
 
 		modelStack.PushMatrix();
@@ -342,6 +380,15 @@ void SceneAI2::Render()
 	modelStack.Scale(manaArea.x, manaArea.y, manaArea.z);
 	RenderMesh(meshList[MANA_AREA], false);
 	modelStack.PopMatrix();
+	
+	for (std::vector<GameObject *>::iterator it = GameObjectManager::GetInstance()->m_goList.begin(); it != GameObjectManager::GetInstance()->m_goList.end(); ++it)
+	{
+		GameObject *go = (GameObject *)*it;
+		if (go->active)
+		{
+			RenderGO(go);
+		}
+	}
 
 	float yCoordinates = 58.f;
 	std::ostringstream ss;

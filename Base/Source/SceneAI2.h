@@ -47,10 +47,16 @@ protected:
 	Enemy* bossEnemy;
 	Vector3 rdmPos[5];
 
+	GameObject* npc;
+
 	Vector3 manaPos;
 	Vector3 manaArea;
 
 	NodeManager* nodemanager;
+
+	int AIIndex;
+	std::vector<Vector3> waypoints;
+	bool reverse;
 };
 
 

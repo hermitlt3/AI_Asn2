@@ -113,8 +113,13 @@ void SceneBase::Init()
 	meshList[BOSS_ENEMY] = MeshBuilder::GenerateQuad("boss", Color(1, 0, 0), 2.f);
 	meshList[BOSS_ENEMY]->textureID = LoadTGA("Image//Passive.tga");
 
+	meshList[NPC] = MeshBuilder::GenerateQuad("npc", Color(1, 0, 0), 2.f);
+	meshList[NPC]->textureID = LoadTGA("Image//Aggressive.tga");
+
 	meshList[GRID_EMPTY] = MeshBuilder::GenerateQuad("grid", Color(1, 0, 1), 1.f);
 	meshList[GRID_EMPTY]->textureID = LoadTGA("Image//Tile.tga");
+	meshList[GRID_VISITED] = MeshBuilder::GenerateQuad("visit", Color(1, 0, 1), 1.f);
+	meshList[GRID_VISITED]->textureID = LoadTGA("Image//TileVisited.tga");
 
 	meshList[MANA_AREA] = MeshBuilder::GenerateQuad("mana", Color(1, 0, 1), 1.f);
 	meshList[MANA_AREA]->textureID = LoadTGA("Image//Manafountain.tga");

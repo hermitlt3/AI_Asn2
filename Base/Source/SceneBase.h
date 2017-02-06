@@ -46,6 +46,7 @@ public:
 		GEO_AXES,
 		PRIEST,
 		GUARDIAN,
+		NPC,
 		BOSS_ENEMY,
 
 		GEO_TEXT,
@@ -55,6 +56,7 @@ public:
 		GRID_EMPTY,
 		GRID_START,
 		GRID_END,
+		GRID_VISITED,
 		GRID_PATH,
 
 		MANA_AREA,

@@ -2,10 +2,9 @@
 #include "Vector3.h"
 #include "Node.h"
 #include "NodeManager.h"
-#include <list>
-#include <queue>
 #include <map>
 #include <set>
+#include <vector>
 
 using namespace std;
 
@@ -15,7 +14,7 @@ bool leftFltrightF(Node* lhs, Node* rhs)
 }
 
 
-static void AStarAlgorithm(Node* start, Node* goal) 
+static vector<Vector3> AStarAlgorithm(Node* start, Node* goal) 
 {
 	/*
 	// The set of currently discovered nodes that are already evaluated
@@ -78,17 +77,17 @@ static void AStarAlgorithm(Node* start, Node* goal)
 	map<Node*, Node*> came_from;
 	gScore[start] = 0;
 	fScore[start] = heuristic(start->grid->pos, goal->grid->pos);
-	int i = 0;
-	Node* current;
 
+	Node* current;
+	vector<Vector3> results;
+	results.push_back(goal->grid->pos);
 	while (!openList.empty())
 	{
 		current = *(openList.begin());
 
-		if (current == goal || i > 20){
+		if (current == goal)
 			break;
-		}
-		i++;
+
 		openList.erase(current);
 		closeList.insert(current);
 
@@ -100,7 +99,6 @@ static void AStarAlgorithm(Node* start, Node* goal)
 				continue;
 			}
 			next->visited = true;
-			std::cout << next->grid->pos << std::endl;
 
 			int tentative_gScore = gScore[current] + heuristic(current->grid->pos, next->grid->pos);
 			if (openList.find(next) == openList.end()) {
@@ -114,9 +112,22 @@ static void AStarAlgorithm(Node* start, Node* goal)
 			fScore[next] = gScore[next] + heuristic(next->grid->pos, goal->grid->pos);
 		}
 	}
+
+	if (current != goal)
+		return results;
+
 	while (current != start)
 	{
-		current->parent = new Node();
+		current->parent = came_from[current];
+		if (results.back().x != came_from[current]->grid->pos.x && results.front().y != came_from[current]->grid->pos.y) {
+			results.push_back(current->grid->pos);
+		}
 		current = came_from[current];
 	}
+	results.push_back(start->grid->pos);
+
+	for (int i = 0; i < results.size(); ++i) {
+		cout << results[i] << endl;
+	}
+	return results;
 }
