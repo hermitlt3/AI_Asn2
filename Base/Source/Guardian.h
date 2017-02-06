@@ -48,6 +48,7 @@ public:
 		case 5:
 			return "DIE";
 		}
+		return "";
 	}
 
 private:
@@ -79,6 +80,7 @@ private:
 	float Aggrorange;
 	float distancefromPriest;
 	float distancefromoriginalposition;
+	float originalScale;
 };
 
 static float DistBetween(const Vector3& posOne, const Vector3& posTwo)

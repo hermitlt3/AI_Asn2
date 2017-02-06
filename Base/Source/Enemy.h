@@ -44,6 +44,7 @@ public:
 		case 3:
 			return "DIE";
 		}
+		return "";
 	}
 
 private:	

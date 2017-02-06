@@ -14,6 +14,9 @@ public:
 		IDLE = 0,
 		HEAL,
 		RUN,
+		RESURRECT,
+		REPLENISH,
+		RETURN,
 		DIE
 	};
 	// Constructor
@@ -36,9 +39,18 @@ public:
 		case 2:
 			return "RUN";
 		case 3:
+			return "RESURRECT";
+		case 4:
+			return "REPLENISH";
+		case 5:
+			return "RETURN";
+		case 6:
 			return "DIE";
-		}
+ 		}
+		return "";
 	}
+	Vector3 manaPos;
+	Vector3 resetPos;
 
 private:
 	// Function to do things from to msg received
@@ -55,7 +67,7 @@ private:
 	double timer;
 	// float
 	float speed;
-
+	
 	// Find if there are enemies within outer proximity, and return a Vector3 which is the flocking distance
 	Vector3 IsEnemiesInOuterP();
 	// Find if there are enemies within inner proximity, and return if there are enemies
@@ -63,6 +75,8 @@ private:
 	// Finds and heals guardian
 	Guardian* guardian;
 	void HealsGuardian(double dt);
+	void RevivesGuardian(double dt);
+	void ReplenishMana(double dt);
 	// Returns to idle state
 	void ReturnToIdle(double dt);
 };

@@ -13,6 +13,8 @@ speed(5.f)
 {
 	health = 100;
 	maxhealth = health;
+	mana = 50;
+	maxmana = mana;
 }
 
 Priest::~Priest()
@@ -26,10 +28,16 @@ void Priest::OnNotification(const std::string& msg)
 	{
 		timer = 0.0;
 		currState = HEAL;
+		resetPos = pos;
 	}
 	else if (msg == "UNINJURED")
 	{
-		currState = IDLE;
+		currState = RETURN;
+	}
+	else if (msg == "GUARDIAN DOWN")
+	{
+		currState = RESURRECT;
+		//resetPos = pos;
 	}
 }
 
@@ -41,9 +49,19 @@ void Priest::Update(double dt)
 				 HealsGuardian(dt);
 				 break;
 	}
+	case RESURRECT:
+	{
+					  RevivesGuardian(dt);
+					  break;
+	}
+	case REPLENISH:
+	{
+					  ReplenishMana(dt);
+					  break;
+	}
 	case IDLE:
 	{
-				 ReturnToIdle(dt);
+				 vel.SetZero();
 				 break;
 	}
 	case RUN:
@@ -53,10 +71,16 @@ void Priest::Update(double dt)
 	}
 	case DIE:
 	{
-				scale.x -= dt; scale.y -= dt; scale.z -= dt;
+				scale.x -= (float)dt * 3; scale.y -= (float)dt * 3; scale.z -= (float)dt * 3;
 				if (scale.x <= Math::EPSILON) {
 					active = false;
 				}
+				break;
+	}
+	case RETURN:
+	{
+				   ReturnToIdle(dt);
+				   break;
 	}
 	}
 	// Check if the health in this frame is not the same as the one in the next frame
@@ -77,6 +101,14 @@ void Priest::FSM()
 			SendMessage("UNDER ATTACK");
 		}
 		switch (currState){
+		case IDLE:
+		{
+					 if ((float)mana / (float)maxmana < 0.5f) {
+						 currState = REPLENISH;
+						 resetPos = pos;
+					 }
+					 break;
+		}
 		case RUN:
 		{
 				  if (!IsEnemiesInInnerP())
@@ -86,14 +118,26 @@ void Priest::FSM()
 				  }
 				  break;
 		}
-		case HEAL:
+		case RESURRECT:
 		{
-					 break;
+						  if (guardian->active == true)
+							  currState = RETURN;
+						  break;
 		}
-		case IDLE:
+		case REPLENISH:
 		{
-					 // In OnNotification();
-					 break;
+						  if (mana >= maxmana) {
+							  mana = maxmana;
+							  currState = RETURN;
+						  }
+						  break;
+		}
+		case RETURN:
+		{
+					   if ((guardian->pos - pos).Length() > innerProximity - 1.f && (guardian->pos - pos).Length() < innerProximity + 1.f)
+						   currState = IDLE;
+
+					   break;
 		}
 		}
 	}
@@ -139,6 +183,7 @@ void Priest::HealsGuardian(double dt)
 		if (timer > 1.0) {
 			guardian->health += 10;
 			timer = 0.0;
+			mana -= 5;
 		}
 	}
 	else {
@@ -146,10 +191,46 @@ void Priest::HealsGuardian(double dt)
 	}
 }
 
+void Priest::RevivesGuardian(double dt)
+{
+	if ((guardian->pos - pos).Length() <= guardian->scale.x + scale.x) {
+		timer += dt;
+		vel.SetZero();
+	}
+	else
+		vel = (guardian->pos - pos).Normalized() * speed;
+
+	if (timer > 3.0) {
+		SendMessage("REVIVING");
+		mana -= 30;
+		timer = 0.0;
+	}
+}
+
+void Priest::ReplenishMana(double dt)
+{
+	Vector3 offset;
+	offset.Set(3, 3, 0);
+	vel = (manaPos - pos).Normalized() * speed;
+	if (pos.x > manaPos.x - offset.x && pos.x < manaPos.x + offset.x &&
+		pos.y > manaPos.y - offset.y && pos.y < manaPos.y + offset.y) {
+		vel.SetZero();
+
+		timer += dt;
+		if (timer > 0.2) {
+			mana += 3;
+			timer = 0.0;
+		}
+	}
+}
+
+
 void Priest::ReturnToIdle(double dt)
 {
-	if ((guardian->pos - pos).Length() < innerProximity)
+	if ((guardian->pos - pos).Length() < innerProximity + 1.f)
 		vel = (pos - guardian->pos).Normalized() * speed;
+	else if ((guardian->pos - pos).Length() > innerProximity - 1.f)
+		vel = (guardian->pos - pos).Normalized() * speed;
 	else
 		vel.SetZero();
 }

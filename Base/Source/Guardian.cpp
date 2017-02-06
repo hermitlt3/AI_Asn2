@@ -14,6 +14,7 @@ currState(IDLE), Speed(10.0f), Aggrorange(5.f)
 	health = 100;
 	maxhealth = health;
 	nexthealth = health;
+	originalScale = 5;
 }
 
 Guardian::~Guardian()
@@ -115,7 +116,7 @@ void Guardian::Update(double dt)
 		this->vel.SetZero();
 		this->normal = (_target->pos - this->pos).Normalized();
 		timer += dt;
-		if (timer < 1.f)
+		if (timer > 1.f)
 		{
 			_target->health -= (float)Math::RandFloatMinMax(10.f, 15.f);
 			timer = 0;
@@ -128,10 +129,14 @@ void Guardian::Update(double dt)
 	}
 	case DIE:
 	{
-		scale.x -= dt; scale.y -= dt; scale.z -= dt;
-		if (scale.x <= Math::EPSILON) {
-			active = false;
-		}
+				if (active) {
+					scale.x -= dt * 3; scale.y -= dt * 3; scale.z -= dt * 3;
+					if (scale.x <= Math::EPSILON) {
+						SendMessage("GUARDIAN DOWN");
+						active = false;
+						scale.Set(originalScale, originalScale, originalScale);
+					}
+				}
 	}
 	}
 	nexthealth = health;
@@ -146,6 +151,12 @@ void Guardian::OnNotification(const std::string& msg)
 	if (msg == "UNHARMED")
 	{
 		currState = RETURN;
+	}
+	if (msg == "REVIVING")
+	{
+		currState = IDLE;
+		active = true;
+		health = 100;
 	}
 }
 

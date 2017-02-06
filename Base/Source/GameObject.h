@@ -29,6 +29,8 @@ struct GameObject
 	float mass;
 	int health;
 	int maxhealth;
+	int mana;
+	int maxmana;
 
 	GameObject(GAMEOBJECT_TYPE typeValue = GO_NONE);
 	virtual ~GameObject();
@@ -39,8 +41,6 @@ struct GameObject
 		Vector3 pos = (0.f, 0.f, 0.f),
 		bool _active = true
 				);
-
-	virtual std::string GetState(){};
 };
 
 #endif

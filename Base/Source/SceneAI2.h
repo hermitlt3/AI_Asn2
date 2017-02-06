@@ -47,6 +47,9 @@ protected:
 	Enemy* bossEnemy;
 	Vector3 rdmPos[5];
 
+	Vector3 manaPos;
+	Vector3 manaArea;
+
 	NodeManager* nodemanager;
 };
 

@@ -57,6 +57,8 @@ public:
 		GRID_END,
 		GRID_PATH,
 
+		MANA_AREA,
+
 		BACKGROUND,
 
 		NUM_GEOMETRY,

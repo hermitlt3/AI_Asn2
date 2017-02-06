@@ -54,11 +54,11 @@ public:
 	};
 
 	int returnWidthIndex(Node* node) {
-		return (node->grid->pos.x - (GRID_SIZE >> 1)) / GRID_SIZE;
+		return (int)((node->grid->pos.x - (GRID_SIZE >> 1)) / GRID_SIZE);
 	}
 
 	int returnHeightIndex(Node* node) {
-		return (node->grid->pos.y - (GRID_SIZE >> 1)) / GRID_SIZE;
+		return (int)((node->grid->pos.y - (GRID_SIZE >> 1)) / GRID_SIZE);
 	}
 
 	int returnGcost(Node* start, Node* curr) {

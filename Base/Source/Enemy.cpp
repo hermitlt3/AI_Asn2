@@ -49,8 +49,9 @@ void Enemy::Update(double dt)
 	if (health <= 20 && isLeader)
 	{
 		if (!isSent) {
-			SendMessage("AMBUSH");
+			//SendMessage("AMBUSH");
 			isSent = true;
+			health = 0;
 		}
 	}
 	if (health <= 0)
@@ -117,6 +118,8 @@ void Enemy::ChaseFriendly()
 	for (std::vector<GameObject *>::iterator it = GameObjectManager::GetInstance()->m_goList.begin(); it != GameObjectManager::GetInstance()->m_goList.end(); ++it)
 	{
 		GameObject *go = (GameObject *)*it;
+		if (!go->active)
+			continue;
 		if (go->type == GameObject::GO_PRIEST || go->type == GameObject::GO_GUARDIAN) {
 			if ((pos - go->pos).Length() < getNearestFriendly.Length()) {
 				getNearestFriendly = pos - go->pos;
@@ -131,11 +134,11 @@ void Enemy::ChaseFriendly()
 
 void Enemy::AttackTarget(double dt)
 {
-	if (!target)
+	if (!target || !target->active)
 		return;
 	vel.SetZero();
 	timer += dt;
-	if (timer > 2.0) {
+	if (timer > 1.0) {
 		timer = 0.0;
 		target->health -= 5;
 	}

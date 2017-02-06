@@ -5,20 +5,19 @@
 #include <list>
 #include <queue>
 #include <map>
-
+#include <set>
 
 using namespace std;
 
-struct LessFcost {
-	bool operator()(Node* lhs, Node* rhs)
-	{
-		return lhs->F > rhs->F;
-	}
-};
+bool leftFltrightF(Node* lhs, Node* rhs)
+{
+	return lhs->F < rhs->F;
+}
 
 
 static void AStarAlgorithm(Node* start, Node* goal) 
 {
+	/*
 	// The set of currently discovered nodes that are already evaluated
 	priority_queue<Node*, std::vector<Node*>, LessFcost>openList;
 	// Only start node is known
@@ -29,26 +28,26 @@ static void AStarAlgorithm(Node* start, Node* goal)
 	map<Node*, Node*> came_from;
 	cost_so_far[start] = 0;
 	came_from[start] = nullptr;
-	
+	int i = 0;
 	Node* current;
 
 	while (!openList.empty())
 	{
 		current = openList.top();
 
-		if (current == goal){
+		if (current == goal || i > 20){
 			break;
 		}
-		
+		i++;
 		list<Node*>tempList = NodeManager::GetInstance()->returnNeighbours(current);
 
 		for (std::list<Node*>::iterator it = tempList.begin(); it != tempList.end(); ++it) {
 			Node* next = (*it);
-			
+			next->visited = true;
 			int new_cost = cost_so_far[current] + NodeManager::GetInstance()->returnGcost(current, next);
 			// If node is an obstacle
-			if (next->grid->type != Grid::EMPTY) {
-				//continue;
+			if (next->grid->type == Grid::WALL) {
+				continue;
 			}
 			// Ignore neighbour
 
@@ -64,7 +63,54 @@ static void AStarAlgorithm(Node* start, Node* goal)
 			}
 		}
 	}
-	/*while (current != start) {
+	while (current != start) {
 
-	}*/
+	}*///
+	bool(*compare)(Node*, Node*) = leftFltrightF;
+
+	set<Node*, bool(*)(Node*, Node*)>openList(compare);
+	set<Node*>closeList;
+	openList.insert(start);
+
+	// The set of nodes already checked
+	map<Node*, int> gScore;
+	map<Node*, int> fScore;
+	map<Node*, Node*> came_from;
+	gScore[start] = 0;
+	fScore[start] = heuristic(start->grid->pos, goal->grid->pos);
+	int i = 0;
+	Node* current;
+
+	while (!openList.empty())
+	{
+		current = *(openList.begin());
+
+		if (current == goal || i > 200){
+			break;
+		}
+		i++;
+		openList.erase(current);
+		closeList.insert(current);
+
+		list<Node*>tempList = NodeManager::GetInstance()->returnNeighbours(current);
+		for (std::list<Node*>::iterator it = tempList.begin(); it != tempList.end(); ++it) {
+			Node* next = (*it);
+			std::cout << next->grid->pos << std::endl;
+			next->visited = true;
+		
+			if (openList.find(next) != openList.end()) {
+				continue;
+			}
+			int tentative_gScore = gScore[current] + heuristic(current->grid->pos, next->grid->pos);
+			if (openList.find(next) == openList.end()) {
+				openList.insert(next);
+			}
+			else if (tentative_gScore >= gScore[next])
+				continue;
+
+			came_from[next] = current;
+			gScore[next] = tentative_gScore;
+			fScore[next] = gScore[next] + heuristic(next->grid->pos, goal->grid->pos);
+		}
+	}
 }

@@ -58,12 +58,15 @@ void SceneAI2::Init()
 
 	bossEnemy = new Enemy();
 	bossEnemy->SetGO(GameObject::GO_ENEMY, Vector3(5, 5, 5), Vector3(0, 0, 0), Vector3(100, 35, 0)); // TYPE, SCALE, ROTATION, POSITION
-	bossEnemy->health = 1000;
+	bossEnemy->health = 50;
 	bossEnemy->SetIsLeader(true);
 	GameObjectManager::GetInstance()->m_goList.push_back(bossEnemy);
 
-	int rdm = Math::RandIntMinMax(0, GRID_COLS - 1);
+	manaArea.Set(20, 20, 1);
+	manaPos.Set(m_worldWidth / 2, 80, 0);
+	priest->manaPos = manaPos;
 
+	int rdm = Math::RandIntMinMax(0, GRID_COLS - 1);
 	Node *start; Node *goal;
 	for (int i = 0; i < GRID_COLS; ++i) {
 		for (int j = 0; j < GRID_ROWS; ++j) {
@@ -78,7 +81,7 @@ void SceneAI2::Init()
 			}
 			else {
 				int rdm2 = Math::RandIntMinMax(0, 10);
-				if (rdm2 < 9)
+				if (rdm2 < 8)
 					node->grid = new Grid(Vector3((float)((GRID_SIZE >> 1) + GRID_SIZE * i), (float)((GRID_SIZE >> 1) + GRID_SIZE * j), 0), Vector3(GRID_SIZE, GRID_SIZE, 1), Grid::EMPTY);
 				else
 					node->grid = new Grid(Vector3((float)((GRID_SIZE >> 1) + GRID_SIZE * i), (float)((GRID_SIZE >> 1) + GRID_SIZE * j), 0), Vector3(GRID_SIZE, GRID_SIZE, 1), Grid::WALL);
@@ -138,26 +141,18 @@ void SceneAI2::UpdateMouse(double dt)
 void SceneAI2::UpdateKeys(double dt)
 {
 	if (KeyboardController::GetInstance()->IsKeyDown('W')) {
-		//guardian->health -= 1;
-		MessageBoard::GetInstance()->BroadcastMessage("INJURED");
+		guardian->health = 0;
 	}
 	if (KeyboardController::GetInstance()->IsKeyDown('S')) {
-		MessageBoard::GetInstance()->BroadcastMessage("UNINJURED");
+		priest->health = 0;
 	}
 	if (KeyboardController::GetInstance()->IsKeyDown('A')) {
-		MessageBoard::GetInstance()->BroadcastMessage("UNHARMED");
-	}
-	if (KeyboardController::GetInstance()->IsKeyDown('D')) {
-		priest->health -= 1;
-	}
-	if (KeyboardController::GetInstance()->IsKeyDown('P'))
-	{
 
 	}
-	if (KeyboardController::GetInstance()->IsKeyDown('O'))
-	{
-		bossEnemy->health = 0;
+	if (KeyboardController::GetInstance()->IsKeyDown('D')) {
+
 	}
+
 	//
 	double x, y;
 	Application::GetCursorPos(&x, &y);
@@ -310,10 +305,11 @@ void SceneAI2::Render()
 			RenderMesh(meshList[GRID_END], false);
 		else if (nodemanager->theNode[j][i]->parent)
 			RenderMesh(meshList[GRID_PATH], false);
-		else if (nodemanager->theNode[j][i]->visited)
-			RenderMesh(meshList[GRID_EMPTY], false);
 		else if (nodemanager->theNode[j][i]->grid->type == Grid::WALL)
 			RenderMesh(meshList[GRID_WALL], false);
+		else if (nodemanager->theNode[j][i]->visited)
+			RenderMesh(meshList[GRID_EMPTY], false);
+
 		
 
 		std::ostringstream op;
@@ -325,6 +321,12 @@ void SceneAI2::Render()
 		}
 	}
 
+	modelStack.PushMatrix();
+	modelStack.Translate(manaPos.x, manaPos.y, manaPos.z);
+	modelStack.Scale(manaArea.x, manaArea.y, manaArea.z);
+	RenderMesh(meshList[MANA_AREA], false);
+	modelStack.PopMatrix();
+
 	float yCoordinates = 58.f;
 	std::ostringstream ss;
 	for (size_t i = 0; i < MessageBoard::GetInstance()->GetList().size(); ++i)
@@ -333,21 +335,30 @@ void SceneAI2::Render()
 		ss << i << ": Message Board receives \"" << MessageBoard::GetInstance()->GetList()[i] << "\"";
 		RenderTextOnScreen(meshList[GEO_TEXT], ss.str(), Color(1, 1, 0), 2, 1, yCoordinates - i * 1.5f);
 	}
-
+	//
+	// 
+	// << " \tHealth: " << bossEnemy->health
 	std::ostringstream ss2;
 	ss2.str("");
-	ss2 << "Priest state: " << priest->GetState();
-	RenderTextOnScreen(meshList[GEO_TEXT], ss2.str(), Color(1, 1, 0), 1, 50, 58);
-	ss2.str("");
+	ss2 << "Priest state: " << priest->GetState() ;
+	RenderTextOnScreen(meshList[GEO_TEXT], ss2.str(), Color(1, 1, 0), 1, 20, 16);
+	ss2.str("");														 
 	ss2 << "Guardian state: " << guardian->GetState();
-	RenderTextOnScreen(meshList[GEO_TEXT], ss2.str(), Color(1, 1, 0), 1, 50, 54);
-	ss2.str("");
+	RenderTextOnScreen(meshList[GEO_TEXT], ss2.str(), Color(1, 1, 0), 1, 20, 14);
+	ss2.str("");														 
 	ss2 << "Enemy state: " << bossEnemy->GetState();
-	RenderTextOnScreen(meshList[GEO_TEXT], ss2.str(), Color(1, 1, 0), 1, 50, 50);
-	ss2.str("");
-	ss2 << "Guardian Health: " << guardian->gethealth();
-	RenderTextOnScreen(meshList[GEO_TEXT], ss2.str(), Color(1, 1, 0), 1, 50, 46);
+	RenderTextOnScreen(meshList[GEO_TEXT], ss2.str(), Color(1, 1, 0), 1, 20, 12);
 
+
+	ss2.str("");
+	ss2 << "Priest Health: " << priest->health << " \tMana: " << priest->mana;
+	RenderTextOnScreen(meshList[GEO_TEXT], ss2.str(), Color(1, 1, 0), 1, 50, 16);
+	ss2.str("");
+	ss2 << "Guardian Health " << guardian->health;
+	RenderTextOnScreen(meshList[GEO_TEXT], ss2.str(), Color(1, 1, 0), 1, 50, 14);
+	ss2.str("");
+	ss2 << "Enemy Health: " << bossEnemy->health;
+	RenderTextOnScreen(meshList[GEO_TEXT], ss2.str(), Color(1, 1, 0), 1, 50, 12);
 }
 
 void SceneAI2::Exit()
